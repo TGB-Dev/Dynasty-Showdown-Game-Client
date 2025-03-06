@@ -3015,7 +3015,6 @@ __metadata:
     react-icons: "npm:^5.5.0"
     socket.io-client: "npm:^4.8.1"
     swr: "npm:^2.3.2"
-    tailwindcss: "npm:^4"
     typescript: "npm:^5"
     typescript-eslint: "npm:^8.26.0"
     zustand: "npm:^5.0.3"
@@ -6374,7 +6373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:4.0.9, tailwindcss@npm:^4":
+"tailwindcss@npm:4.0.9":
   version: 4.0.9
   resolution: "tailwindcss@npm:4.0.9"
   checksum: 10c0/92e5f0ff9d98b4b7c79419e21b02d703aafa86f1d9b92b039cc0ac3e2963e763c5c9bcfc2afdf9f46fc709812c1aab12565b02bebe70dcaaccb2773884cc0654

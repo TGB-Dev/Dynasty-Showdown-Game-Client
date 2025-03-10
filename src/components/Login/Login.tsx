@@ -23,31 +23,30 @@ function Login() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card.Root maxW="sm">
         <Card.Header>
-          <Card.Title>Sign up</Card.Title>
-          <Card.Description>
-            Fill in the form below to create an account
-          </Card.Description>
+          <Card.Title>Đăng nhập tài khoản</Card.Title>
         </Card.Header>
         <Card.Body>
           <Stack gap="4" w="full">
-            <Field label="Username" errorText={errors.username?.message}>
+            <Field label="Tên đăng nhập" errorText={errors.username?.message}>
               <Input
-                placeholder="Username"
-                {...register("username", { required: "Username is required" })}
+                placeholder="Tên đăng nhập"
+                {...register("username", {
+                  required: "Chưa điền tên đăng nhập",
+                })}
               />
             </Field>
-            <Field label="Password" errorText={errors.password?.message}>
+            <Field label="Mật khẩu" errorText={errors.password?.message}>
               <Input
-                placeholder="Password"
-                {...register("password", { required: "Password is required" })}
+                placeholder="Mật khẩu"
+                {...register("password", { required: "Chưa điền mật khẩu" })}
               />
             </Field>
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">Thoát</Button>
           <Button type="submit" variant="solid">
-            Log in
+            Đăng nhập
           </Button>
         </Card.Footer>
       </Card.Root>

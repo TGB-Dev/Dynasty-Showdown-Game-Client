@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { Button, Card, Input, Stack } from "@chakra-ui/react";
 import { Field } from "../ui/field";
+import { PasswordInput } from "../ui/password-input";
 
 function Login() {
   const {
@@ -20,11 +21,11 @@ function Login() {
     console.log(data);
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Card.Root size="lg">
-        <Card.Header>
-          <Card.Title>Đăng nhập tài khoản</Card.Title>
-        </Card.Header>
+    <Card.Root size="lg">
+      <Card.Header>
+        <Card.Title>Đăng nhập tài khoản</Card.Title>
+      </Card.Header>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Card.Body>
           <Stack gap="4" w="full">
             <Field label="Tên đăng nhập" errorText={errors.username?.message}>
@@ -36,7 +37,7 @@ function Login() {
               />
             </Field>
             <Field label="Mật khẩu" errorText={errors.password?.message}>
-              <Input
+              <PasswordInput
                 placeholder="Mật khẩu"
                 {...register("password", { required: "Chưa điền mật khẩu" })}
               />
@@ -49,8 +50,8 @@ function Login() {
             Đăng nhập
           </Button>
         </Card.Footer>
-      </Card.Root>
-    </form>
+      </form>
+    </Card.Root>
   );
 }
 

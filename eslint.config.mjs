@@ -24,6 +24,7 @@ const eslintConfig = [
   {
     rules: {
       "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/no-magic-numbers": "off",
     }
   }
 ];

@@ -21,7 +21,7 @@ function Login() {
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Card.Root maxW="sm">
+      <Card.Root size="lg">
         <Card.Header>
           <Card.Title>Đăng nhập tài khoản</Card.Title>
         </Card.Header>

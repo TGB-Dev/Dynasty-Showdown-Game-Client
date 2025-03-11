@@ -1,4 +1,4 @@
-import type { Game } from "@/types/games.enum";
+import { Game } from "@/types/games.enum";
 import type { User } from "@/types/user.types";
 import type { Fetcher } from "swr";
 
@@ -6,8 +6,13 @@ export function checkForAdminAccess() {
   return true;
 }
 
-export function startGame(game: Game) {
+export async function startGame(game: Game) {
   console.log("Starting game:", game);
+
+  await new Promise((res) => setTimeout(res, 1000));
+  if (game === Game.RiseOfKingdom) throw new Error();
+
+  return true;
 }
 
 export const fetchUsers: Fetcher<User[]> = (): User[] => {

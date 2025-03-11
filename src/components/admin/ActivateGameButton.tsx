@@ -1,6 +1,9 @@
 import { Button, Dialog, Portal } from "@chakra-ui/react";
 import type { Game } from "@/types/games.enum";
 import { startGame } from "@/lib/admin";
+import { toaster } from "@/components/ui/toaster";
+import { useEffect, useState } from "react";
+import useSWRMutation from "swr/mutation";
 
 export interface ActivateGameButtonProps {
   game: Game;
@@ -23,6 +26,8 @@ function StartGameConfirmDialog({
   game,
   children,
 }: StartGameConfirmDialogProps) {
+  const { trigger } = useGameToast(game);
+
   return (
     <Dialog.Root role="alertdialog">
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
@@ -47,7 +52,7 @@ function StartGameConfirmDialog({
                 <Button
                   colorPalette="primary"
                   onClick={() => {
-                    startGame(game);
+                    void trigger();
                   }}
                 >
                   Confirm
@@ -59,4 +64,56 @@ function StartGameConfirmDialog({
       </Portal>
     </Dialog.Root>
   );
+}
+
+function useGameToast(game: Game) {
+  const { data, trigger, isMutating, error, reset } = useSWRMutation(
+    "/start/game",
+    async () => {
+      return await startGame(game);
+    },
+  );
+
+  const [toastId, setToastId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (isMutating)
+      setToastId(
+        toaster.upsert({
+          title: `Game: ${game}`,
+          description: "Starting...",
+          type: "loading",
+        }),
+      );
+  }, [isMutating, game]);
+
+  useEffect(() => {
+    if (error != null) {
+      setToastId(
+        toaster.upsert({
+          id: toastId,
+          description: "Error occurred. Please check log.",
+          type: "error",
+        }),
+      );
+    }
+  }, [toastId, error]);
+
+  useEffect(() => {
+    if (data != null) {
+      setToastId(
+        toaster.upsert({
+          id: toastId,
+          description: "Started successfully.",
+          type: "success",
+        }),
+      );
+    }
+  }, [data, toastId]);
+
+  useEffect(() => {
+    if (!isMutating) reset();
+  }, [isMutating, reset]);
+
+  return { trigger };
 }

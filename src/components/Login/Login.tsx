@@ -1,25 +1,31 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { Button, Card, Input, Stack } from "@chakra-ui/react";
 import { Field } from "../ui/field";
 import { PasswordInput } from "../ui/password-input";
+
+interface FormValues {
+  username: string;
+  password: string;
+}
 
 function Login() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data);
   };
+
   return (
     <Card.Root size="lg">
       <Card.Header>

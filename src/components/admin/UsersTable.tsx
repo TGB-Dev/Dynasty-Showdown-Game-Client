@@ -1,73 +1,17 @@
-import { ActionBar, Button, For, Portal, Table } from "@chakra-ui/react";
-import useSWR, { type Fetcher } from "swr";
-import { fetchUsers } from "@/lib/admin";
-import type { User } from "@/types/user.types";
+import { For, Table } from "@chakra-ui/react";
+import useSWR from "swr";
+import { FETCH_USERS_API_PATH, modifyPoint } from "@/lib/admin";
 import { Checkbox } from "@/components/ui/checkbox";
-import { create } from "zustand";
-
-interface UsersState {
-  users: User[];
-  selectedUsers: string[];
-  toggleUser: (id: string) => void;
-  toggleAllUsers: () => void;
-  selectAllUsers: () => void;
-  deselectAllUsers: () => void;
-  isIndeterminate: () => boolean;
-  fetch: Fetcher;
-}
-
-const useUsersStore = create<UsersState>((set, get) => ({
-  users: [],
-  selectedUsers: [],
-
-  isIndeterminate: () => {
-    const { selectedUsers, users } = get();
-    return selectedUsers.length > 0 && selectedUsers.length < users.length;
-  },
-
-  toggleUser: (id: string) => {
-    set((state) => {
-      const selectedUsers = state.selectedUsers.includes(id)
-        ? state.selectedUsers.filter((selectedId) => selectedId !== id)
-        : [...state.selectedUsers, id];
-
-      return { ...state, selectedUsers };
-    });
-  },
-
-  toggleAllUsers: () => {
-    const { selectedUsers, users, selectAllUsers, deselectAllUsers } = get();
-
-    if (selectedUsers.length === users.length) deselectAllUsers();
-    else selectAllUsers();
-  },
-
-  selectAllUsers: () => {
-    set((state) => ({
-      ...state,
-      selectedUsers: state.users.map((user) => user.id),
-    }));
-  },
-
-  deselectAllUsers: () => {
-    set((state) => ({ ...state, selectedUsers: [] }));
-  },
-
-  fetch: async () => {
-    await fetchUsers().then((users) => {
-      set((state) => ({ ...state, users }));
-    });
-  },
-}));
+import { UsersActionBar } from "@/components/admin/UsersActionBar";
+import { useUsersStore } from "@/hooks/admin/useUsersStore";
+import useSWRMutation from "swr/mutation";
 
 export default function UsersTable() {
-  const { users, selectedUsers, toggleUser, toggleAllUsers, fetch } =
+  const { users, selectedUsersId, toggleUser, toggleAllUsers, fetch } =
     useUsersStore((state) => state);
   const isIndeterminate = useUsersStore((state) => state.isIndeterminate());
 
-  useSWR("/users", fetch);
-
-  const hasSelection = selectedUsers.length > 0;
+  useSWR(FETCH_USERS_API_PATH, fetch);
 
   return (
     <>
@@ -79,7 +23,7 @@ export default function UsersTable() {
                 checked={
                   isIndeterminate
                     ? "indeterminate"
-                    : !(selectedUsers.length === 0)
+                    : !(selectedUsersId.length === 0)
                 }
                 onCheckedChange={toggleAllUsers}
               />
@@ -96,7 +40,7 @@ export default function UsersTable() {
               <Table.Row key={user.id}>
                 <Table.Cell>
                   <Checkbox
-                    checked={selectedUsers.includes(user.id)}
+                    checked={selectedUsersId.includes(user.id)}
                     onCheckedChange={() => {
                       toggleUser(user.id);
                     }}
@@ -111,23 +55,7 @@ export default function UsersTable() {
         </Table.Body>
       </Table.Root>
 
-      <ActionBar.Root open={hasSelection}>
-        <Portal>
-          <ActionBar.Positioner>
-            <ActionBar.Content>
-              <ActionBar.SelectionTrigger>
-                {selectedUsers.length} selected
-              </ActionBar.SelectionTrigger>
-
-              <ActionBar.Separator />
-
-              <Button variant="outline" size="sm">
-                Modify point
-              </Button>
-            </ActionBar.Content>
-          </ActionBar.Positioner>
-        </Portal>
-      </ActionBar.Root>
+      <UsersActionBar />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { Game } from "@/types/games.enum";
 import type { User } from "@/types/user.types";
-import type { Fetcher } from "swr";
+
+export const FETCH_USERS_API_PATH = "/api/users";
 
 export function checkForAdminAccess() {
   return true;

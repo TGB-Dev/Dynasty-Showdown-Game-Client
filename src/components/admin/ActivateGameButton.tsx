@@ -67,7 +67,7 @@ function StartGameConfirmDialog({
 }
 
 function useGameToast(game: Game) {
-  const { data, trigger, isMutating, error, reset } = useSWRMutation(
+  const { data, trigger, isMutating, error } = useSWRMutation(
     "/start/game",
     async () => {
       return await startGame(game);
@@ -110,10 +110,6 @@ function useGameToast(game: Game) {
       );
     }
   }, [data, toastId]);
-
-  useEffect(() => {
-    if (!isMutating) reset();
-  }, [isMutating, reset]);
 
   return { trigger };
 }

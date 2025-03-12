@@ -15,8 +15,11 @@ export async function startGame(game: Game) {
   return true;
 }
 
-export const fetchUsers: Fetcher<User[]> = (): User[] => {
+export async function fetchUsers(): Promise<User[]> {
   console.log("Fetching users");
+
+  await new Promise((res) => setTimeout(res, 1000));
+
   return [
     {
       id: "1",
@@ -34,4 +37,4 @@ export const fetchUsers: Fetcher<User[]> = (): User[] => {
       point: 5,
     },
   ];
-};
+}

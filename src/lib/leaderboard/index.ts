@@ -1,7 +1,7 @@
 import type { User } from "@/types/user.types";
 import type { Fetcher } from "swr";
 
-export const fetchUsers: Fetcher<User[]> = (): User[] => {
+export const fetchLeaderboard: Fetcher<User[]> = (): User[] => {
   console.log("Fetching users");
   return [
     {

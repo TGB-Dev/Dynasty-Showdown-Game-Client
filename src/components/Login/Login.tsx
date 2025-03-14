@@ -4,6 +4,9 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { Button, Card, Input, Stack } from "@chakra-ui/react";
 import { Field } from "../ui/field";
 import { PasswordInput } from "../ui/password-input";
+import { useAuthStore } from "@/hooks/auth/useAuthStore";
+import { toaster } from "../ui/toaster";
+import { useRouter } from "next/navigation";
 
 interface FormValues {
   username: string;
@@ -22,8 +25,33 @@ function Login() {
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+  const router = useRouter();
+
+  const fetch = useAuthStore((state) => state.fetch);
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    await fetch(data.username);
+    const { chosen } = useAuthStore.getState();
+
+    console.log(chosen, data);
+
+    if (
+      chosen.username === data.username &&
+      chosen.password === data.password
+    ) {
+      toaster.create({
+        title: "Success",
+        description: "Log in successful",
+        type: "success",
+      });
+      router.push("/games");
+    } else {
+      toaster.create({
+        title: "Error",
+        description: "Log in failed",
+        type: "error",
+      });
+    }
   };
 
   return (

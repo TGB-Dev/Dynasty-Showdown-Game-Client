@@ -18,8 +18,10 @@ const eslintConfig = [
 
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 
-  love,
-  prettierRecommended,
+  {
+    ...love,
+    ...prettierRecommended,
+  },
 
   {
     rules: {

@@ -16,7 +16,7 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormFields>({
     defaultValues: {
       username: "",
@@ -33,24 +33,33 @@ export default function LoginForm() {
       description: "Đang đăng nhập...",
     });
 
-    const loginSuccess = await login(data);
-
-    if (loginSuccess) {
-      toaster.upsert({
-        id: toastId,
-        title: "Đăng nhập",
-        description: "Đăng nhập thành công",
-        type: "success",
+    await login(data)
+      .then((loginSuccess) => {
+        if (loginSuccess) {
+          toaster.upsert({
+            id: toastId,
+            title: "Đăng nhập",
+            description: "Đăng nhập thành công",
+            type: "success",
+          });
+          router.push("/games");
+        } else {
+          toaster.upsert({
+            id: toastId,
+            title: "Đăng nhập",
+            description: "Sai thông tin đăng nhập, vui lòng thử lại",
+            type: "info",
+          });
+        }
+      })
+      .catch(() => {
+        toaster.upsert({
+          id: toastId,
+          title: "Đăng nhập",
+          description: "Đã xảy ra lỗi, vui lòng thử lại",
+          type: "error",
+        });
       });
-      router.push("/games");
-    } else {
-      toaster.upsert({
-        id: toastId,
-        title: "Lỗi!",
-        description: "Đăng nhập thất bại, vui lòng liên hệ quản trị viên",
-        type: "error",
-      });
-    }
   };
 
   return (
@@ -67,6 +76,7 @@ export default function LoginForm() {
         >
           <Input
             placeholder="Tên đăng nhập"
+            disabled={isSubmitting}
             {...register("username", {
               required: "Chưa điền tên đăng nhập",
             })}
@@ -81,13 +91,14 @@ export default function LoginForm() {
           <Input
             type="password"
             placeholder="Mật khẩu"
+            disabled={isSubmitting}
             {...register("password", { required: "Chưa điền mật khẩu" })}
           />
         </Field>
       </Card.Body>
 
       <Card.Footer justifyContent="flex-end">
-        <Button type="submit" variant="solid" w="full">
+        <Button type="submit" variant="solid" w="full" disabled={isSubmitting}>
           Đăng nhập
         </Button>
       </Card.Footer>

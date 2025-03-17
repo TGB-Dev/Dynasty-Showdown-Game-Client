@@ -17,7 +17,7 @@ export const useTheGrandOrderStore = create<GameValues>((set) => ({
   view: 1,
   questions: [],
   answers: [],
-  time: 0,
+  time: 10,
 
   setView: (view) => {
     set((state) => ({

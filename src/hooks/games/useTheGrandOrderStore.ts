@@ -5,19 +5,22 @@ export interface GameValues {
   view: number;
   questions: Question[];
   answers: string[];
-  time: number;
+  baseTime: number;
+  timeLeft: number;
 
   setView: (view: number) => void;
   setQuestions: (questions: Question[]) => void;
   setAnswers: (answers: string[]) => void;
-  setTime: (time: number) => void;
+  setBaseTime: (time: number) => void;
+  setTimeLeft: (time: number) => void;
 }
 
 export const useTheGrandOrderStore = create<GameValues>((set) => ({
   view: 1,
   questions: [],
   answers: [],
-  time: 10,
+  baseTime: 1,
+  timeLeft: 1,
 
   setView: (view) => {
     set((state) => ({
@@ -34,9 +37,14 @@ export const useTheGrandOrderStore = create<GameValues>((set) => ({
       answers: (state.answers = answers),
     }));
   },
-  setTime: (time) => {
+  setTimeLeft: (timeLeft) => {
     set((state) => ({
-      time: (state.time = time),
+      timeLeft: (state.timeLeft = timeLeft),
+    }));
+  },
+  setBaseTime: (baseTime) => {
+    set((state) => ({
+      baseTime: (state.baseTime = baseTime),
     }));
   },
 }));

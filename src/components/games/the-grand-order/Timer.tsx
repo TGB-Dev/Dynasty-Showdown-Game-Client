@@ -1,18 +1,17 @@
 "use client";
 import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
 import { Flex, Progress } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 function Timer() {
-  const time = useTheGrandOrderStore((state) => state.time);
-  const setTime = useTheGrandOrderStore((state) => state.setTime);
-
-  const [baseTime, setBaseTime] = useState(time);
+  const timeLeft = useTheGrandOrderStore((state) => state.timeLeft);
+  const setTimeLeft = useTheGrandOrderStore((state) => state.setTimeLeft);
+  const baseTime = useTheGrandOrderStore((state) => state.baseTime);
 
   useEffect(() => {
-    if (time <= 0) return;
+    if (timeLeft <= 0) return;
     const interval = setInterval(() => {
-      setTime(time - 1);
+      setTimeLeft(timeLeft - 1);
     }, 1000);
     return () => clearInterval(interval);
   });
@@ -20,17 +19,18 @@ function Timer() {
   return (
     <Flex justifyContent="center" alignItems="center">
       <Progress.Root
+        size="lg"
         defaultValue={100}
-        value={(time * 100) / baseTime}
+        value={(timeLeft * 100) / baseTime}
         maxW="sm"
         width="100%"
       >
-        <Flex gap={5}>
-          <Progress.Track flex="1">
-            <Progress.Range />
-          </Progress.Track>
-          <Progress.ValueText>{time}s</Progress.ValueText>
-        </Flex>
+        <Progress.ValueText>
+          Thời gian còn lại: {timeLeft} giây
+        </Progress.ValueText>
+        <Progress.Track flex="1">
+          <Progress.Range />
+        </Progress.Track>
       </Progress.Root>
     </Flex>
   );

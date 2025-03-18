@@ -3,7 +3,7 @@ export async function fetchTGOQuestions(pack: number) {
 
   return Array(pack).fill({
     id: 1,
-    questions: "Test",
-    answers: "2",
+    question: "Test",
+    answer: "2",
   });
 }

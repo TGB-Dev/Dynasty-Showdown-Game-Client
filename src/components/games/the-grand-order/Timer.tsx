@@ -5,16 +5,25 @@ import { useEffect } from "react";
 
 function Timer() {
   const timeLeft = useTheGrandOrderStore((state) => state.timeLeft);
-  const setTimeLeft = useTheGrandOrderStore((state) => state.setTimeLeft);
   const baseTime = useTheGrandOrderStore((state) => state.baseTime);
+  const view = useTheGrandOrderStore((state) => state.view);
+  const setTimeLeft = useTheGrandOrderStore((state) => state.setTimeLeft);
+  const setView = useTheGrandOrderStore((state) => state.setView);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      if (view == 1 || view == 2) {
+        setView(3);
+      } else {
+        setView(1);
+      }
+      return;
+    }
     const interval = setInterval(() => {
       setTimeLeft(timeLeft - 1);
     }, 1000);
     return () => clearInterval(interval);
-  });
+  }, [timeLeft]);
 
   return (
     <Flex justifyContent="center" alignItems="center">

@@ -2,7 +2,8 @@
 import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
 import Timer from "./Timer";
 import PackageView from "./views/PackageView";
-import { Stack } from "@chakra-ui/react";
+import { Flex, Stack } from "@chakra-ui/react";
+import QuestionsView from "./views/QuestionsView";
 
 function GameView() {
   const view = useTheGrandOrderStore((state) => state.view);
@@ -10,7 +11,7 @@ function GameView() {
     <Stack gap={20} padding={10}>
       <Timer />
       {view === 1 && <PackageView />}
-      {view === 2 && <div />}
+      {view === 2 && <QuestionsView />}
       {view === 3 && <div />}
     </Stack>
   );

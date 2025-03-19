@@ -1,16 +1,18 @@
-'use client'
+"use client";
 
+// import Attacker from "@/components/games/rok/attacker";
+// import Defender from "@/components/games/rok/defender";
 import Main from "@/components/games/rok/main";
-import { useROKStore } from "@/hooks/games/rok";
+import { Container } from "@chakra-ui/react";
+// import Pick from "@/components/games/rok/pick";
 
 export default function RiseOfKingdomPage() {
-  const {scene} = useROKStore();
-
   return (
-    <div>
-      <h1>Rise of Kingdom</h1>
-      <h2>{scene}</h2>
+    <Container maxW={"6xl"}>
       <Main />
-    </div>
+      {/* <Pick /> */}
+      {/* <Attacker />  */}
+      {/* <Defender /> */}
+    </Container>
   );
 }

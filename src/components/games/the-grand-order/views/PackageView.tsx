@@ -5,8 +5,10 @@ import { Button, Flex, Table } from "@chakra-ui/react";
 import { useEffect } from "react";
 
 function PackageView() {
+  const score = useTheGrandOrderStore((state) => state.score);
   const setView = useTheGrandOrderStore((state) => state.setView);
   const setQuestions = useTheGrandOrderStore((state) => state.setQuestions);
+  const setPack = useTheGrandOrderStore((state) => state.setPack);
   const setTimeLeft = useTheGrandOrderStore((state) => state.setTimeLeft);
   const setBaseTime = useTheGrandOrderStore((state) => state.setBaseTime);
 
@@ -17,6 +19,7 @@ function PackageView() {
 
   async function handleClick(pack: number) {
     const questions = await fetchTGOQuestions(pack);
+    setPack(pack);
     setQuestions(questions);
     setView(2);
   }
@@ -25,8 +28,9 @@ function PackageView() {
       direction="column"
       justifyContent="center"
       alignItems="center"
-      gap={20}
+      gap={16}
     >
+      <div>Điểm hiện tại: {score}</div>
       <Table.Root
         tableLayout="fixed"
         variant="outline"

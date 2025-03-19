@@ -13,7 +13,6 @@ function QuestionsView() {
   );
   const [ansPos, setAnsPos] = useState<number[]>([]);
   const questionsList: string[] = questions.map((q) => q.question);
-  const answersList: string[] = questions.map((q) => q.answer);
 
   function handleClickLeft(i: number) {
     setAnsPos([...ansPos, i]);
@@ -24,7 +23,6 @@ function QuestionsView() {
     });
   }
   function handleClickRight(i: number) {
-    console.log(ansPos);
     setSidePos(() => {
       const temp = [...sidePos];
       temp[ansPos[i]] = 0;
@@ -45,9 +43,9 @@ function QuestionsView() {
     <Box w={500} h="100%" mx="auto">
       <Flex gap={20} minH={questions.length * 50}>
         <Stack w="100%">
-          {answersList.map(
-            (answer, i) =>
-              sidePos[i] == 0 && (
+          {sidePos.map(
+            (side, i) =>
+              side == 0 && (
                 <Button key={i} onClick={() => handleClickLeft(i)}>
                   {questionsList[i]}
                 </Button>
@@ -56,8 +54,8 @@ function QuestionsView() {
         </Stack>
         <Stack w="100%">
           {ansPos.map((chosen, i) => (
-            <Button key={i + "B"} onClick={() => handleClickRight(i)}>
-              {answersList[i]}
+            <Button key={questionsList[i]} onClick={() => handleClickRight(i)}>
+              {questionsList[chosen]}
             </Button>
           ))}
         </Stack>

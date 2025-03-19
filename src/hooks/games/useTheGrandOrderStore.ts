@@ -1,30 +1,42 @@
 import { Question } from "@/types/questions.types";
 import { create } from "zustand";
 
-export interface GameValues {
+export interface TGOStates {
   view: number;
+  pack: number;
   questions: Question[];
-  answers: string[];
+  answers: number[];
   baseTime: number;
   timeLeft: number;
+  score: number;
 
   setView: (view: number) => void;
+  setPack: (pack: number) => void;
   setQuestions: (questions: Question[]) => void;
-  setAnswers: (answers: string[]) => void;
+  setAnswers: (answers: number[]) => void;
   setBaseTime: (time: number) => void;
   setTimeLeft: (time: number) => void;
+  addScore: (score: number) => void;
+  minusScore: (score: number) => void;
 }
 
-export const useTheGrandOrderStore = create<GameValues>((set) => ({
+export const useTheGrandOrderStore = create<TGOStates>((set) => ({
   view: 1,
+  pack: 3,
   questions: [],
   answers: [],
   baseTime: 1,
   timeLeft: 1,
+  score: 0,
 
   setView: (view) => {
     set((state) => ({
       view: (state.view = view),
+    }));
+  },
+  setPack: (pack) => {
+    set((state) => ({
+      pack: (state.pack = pack),
     }));
   },
   setQuestions: (questions) => {
@@ -45,6 +57,16 @@ export const useTheGrandOrderStore = create<GameValues>((set) => ({
   setBaseTime: (baseTime) => {
     set((state) => ({
       baseTime: (state.baseTime = baseTime),
+    }));
+  },
+  addScore: (score) => {
+    set((state) => ({
+      score: state.score + score,
+    }));
+  },
+  minusScore: (score) => {
+    set((state) => ({
+      score: state.score - score,
     }));
   },
 }));

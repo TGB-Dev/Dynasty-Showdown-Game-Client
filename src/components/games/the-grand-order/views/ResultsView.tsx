@@ -1,6 +1,8 @@
+"use client";
 import { useUsersStore } from "@/hooks/admin/useUsersStore";
 import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
 import { FETCH_USERS_API_PATH } from "@/lib/admin";
+import { packInfo } from "@/types/packages";
 import { User } from "@/types/user.types";
 import { Button, Stack, Table, Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -22,30 +24,16 @@ function ResultsView() {
   const users = useUsersStore((state) => state.users);
   const fetch = useUsersStore((state) => state.fetch);
 
-  let prize = 0;
-  let penalty = 0;
+  const prize = packInfo.get(pack)!.prize;
+  const penalty = packInfo.get(pack)!.penalty;
 
   useSWR(FETCH_USERS_API_PATH, fetch);
 
   useEffect(() => {
     setTimeLeft(30);
     setBaseTime(30);
-    assignPackagePoints();
     compare();
   }, []);
-
-  function assignPackagePoints() {
-    if (pack == 3) {
-      prize = 20;
-      penalty = 10;
-    } else if (pack == 5) {
-      prize = 50;
-      penalty = 30;
-    } else {
-      prize = 100;
-      penalty = 70;
-    }
-  }
 
   function compare() {
     if (answers.length < questions.length || answers.length == 0) {

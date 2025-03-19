@@ -1,6 +1,7 @@
 "use client";
 import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
 import { fetchTGOQuestions } from "@/lib/games";
+import { packInfo } from "@/types/packages";
 import { Button, Flex, Table } from "@chakra-ui/react";
 import { useEffect } from "react";
 
@@ -13,6 +14,7 @@ function PackageView() {
   const setBaseTime = useTheGrandOrderStore((state) => state.setBaseTime);
 
   useEffect(() => {
+    setPack(3);
     setTimeLeft(70);
     setBaseTime(70);
   }, []);
@@ -39,27 +41,19 @@ function PackageView() {
         showColumnBorder
       >
         <Table.Body>
-          <Table.Row>
-            <Table.Cell textAlign="center" fontWeight="bold">
-              03 câu hỏi
-            </Table.Cell>
-            <Table.Cell textAlign="center">20 điểm thưởng</Table.Cell>
-            <Table.Cell textAlign="center">10 điểm phạt</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell textAlign="center" fontWeight="bold">
-              05 câu hỏi
-            </Table.Cell>
-            <Table.Cell textAlign="center">50 điểm thưởng</Table.Cell>
-            <Table.Cell textAlign="center">30 điểm phạt</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell textAlign="center" fontWeight="bold">
-              07 câu hỏi
-            </Table.Cell>
-            <Table.Cell textAlign="center">100 điểm thưởng</Table.Cell>
-            <Table.Cell textAlign="center">70 điểm phạt</Table.Cell>
-          </Table.Row>
+          {[3, 5, 7].map((pack) => (
+            <Table.Row key={pack}>
+              <Table.Cell textAlign="center" fontWeight="bold">
+                0{packInfo.get(pack)!.noOfQuestions} câu hỏi
+              </Table.Cell>
+              <Table.Cell textAlign="center">
+                {packInfo.get(pack)!.prize} điểm thưởng
+              </Table.Cell>
+              <Table.Cell textAlign="center">
+                {packInfo.get(pack)!.penalty} điểm phạt
+              </Table.Cell>
+            </Table.Row>
+          ))}
         </Table.Body>
       </Table.Root>
       <Flex justifyContent="space-between" alignItems="center" gap={20}>

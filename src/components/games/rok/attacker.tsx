@@ -1,4 +1,4 @@
-import { Card, Flex, For, Text } from "@chakra-ui/react";
+import { Card, Center, Dialog, Flex, For, Text } from "@chakra-ui/react";
 import React from "react";
 import { FaRegSquare } from "react-icons/fa";
 
@@ -6,7 +6,8 @@ export default function Attacker() {
   const options = ["A. Answer", "B. Answer", "C. Answer", "D. Answer"];
 
   return (
-      <Flex pt={16} direction={"column"} spaceY={24}>
+    <>
+      <Flex pt={16} direction={"column"} spaceY={20}>
         <Card.Root h={"45vh"}>
           <Flex
             h={"100%"}
@@ -43,5 +44,21 @@ export default function Attacker() {
           </For>
         </Flex>
       </Flex>
+      <Dialog.Root open={true} size={"full"}>
+        <Dialog.Positioner>
+          <Dialog.Content h={"100%"}>
+            <Flex
+              h={"100%"}
+              direction={"column"}
+              justify={"center"}
+              align={"center"}
+            >
+              Icon
+              <div className="">Content</div>
+            </Flex>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
+    </>
   );
 }

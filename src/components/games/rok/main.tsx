@@ -1,5 +1,5 @@
 import { useROKStore } from "@/hooks/games/rok";
-import { Box, Card, Flex, For } from "@chakra-ui/react";
+import { Card, Flex, For, Text } from "@chakra-ui/react";
 
 export default function Main() {
   const { matrix } = useROKStore();
@@ -7,11 +7,15 @@ export default function Main() {
   return (
     <Flex
       direction={"column"}
-      justify={"center"}
       align={"center"}
       w={"100%"}
       h={"100vh"}
+      pt={16}
+      spaceY={6}
     >
+      <Text fontSize={48} fontWeight={600}>
+        Rise of kingdom
+      </Text>
       <Flex direction={"column"}>
         <For each={matrix}>
           {(items, i) => (
@@ -20,8 +24,8 @@ export default function Main() {
                 {(item, is) => (
                   <Card.Root
                     key={is}
-                    w={"4rem"}
-                    aspectRatio={1}
+                    w={"3rem"}
+                    h={"3rem"}
                     display={"flex"}
                     justifyContent={"center"}
                     alignItems={"center"}

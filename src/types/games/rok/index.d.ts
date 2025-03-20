@@ -1,5 +1,6 @@
 declare interface OpenState {
-  attack: boolean;
+  attack?: boolean;
+  defend?: boolean;
   correct: boolean;
   wrong: boolean;
 }
@@ -9,4 +10,9 @@ declare interface Question {
   question: string;
   options: string[];
   answer: string;
+}
+
+declare interface Success {
+  attack: boolean;
+  defend: boolean;
 }

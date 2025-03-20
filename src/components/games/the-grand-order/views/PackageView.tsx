@@ -6,12 +6,8 @@ import { Button, Flex, Table } from "@chakra-ui/react";
 import { useEffect } from "react";
 
 function PackageView() {
-  const score = useTheGrandOrderStore((state) => state.score);
-  const setView = useTheGrandOrderStore((state) => state.setView);
-  const setQuestions = useTheGrandOrderStore((state) => state.setQuestions);
-  const setPack = useTheGrandOrderStore((state) => state.setPack);
-  const setTimeLeft = useTheGrandOrderStore((state) => state.setTimeLeft);
-  const setBaseTime = useTheGrandOrderStore((state) => state.setBaseTime);
+  const { score, setView, setQuestions, setPack, setTimeLeft, setBaseTime } =
+    useTheGrandOrderStore((state) => state);
 
   useEffect(() => {
     setPack(3);
@@ -36,8 +32,8 @@ function PackageView() {
       <Table.Root
         tableLayout="fixed"
         variant="outline"
-        size="lg"
-        maxW={600}
+        size="md"
+        maxW="md"
         showColumnBorder
       >
         <Table.Body>
@@ -56,7 +52,7 @@ function PackageView() {
           ))}
         </Table.Body>
       </Table.Root>
-      <Flex justifyContent="space-between" alignItems="center" gap={20}>
+      <Flex wrap="wrap" justifyContent="center" alignItems="center" gap={16}>
         <Button onClick={() => handleClick(3)}>Chọn gói 03 câu hỏi</Button>
         <Button onClick={() => handleClick(5)}>Chọn gói 05 câu hỏi</Button>
         <Button onClick={() => handleClick(7)}>Chọn gói 07 câu hỏi</Button>

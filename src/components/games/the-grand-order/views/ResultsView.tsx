@@ -9,15 +9,17 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 function ResultsView() {
-  const pack = useTheGrandOrderStore((state) => state.pack);
-  const questions = useTheGrandOrderStore((state) => state.questions);
-  const answers = useTheGrandOrderStore((state) => state.answers);
-  const score = useTheGrandOrderStore((state) => state.score);
-  const setView = useTheGrandOrderStore((state) => state.setView);
-  const setTimeLeft = useTheGrandOrderStore((state) => state.setTimeLeft);
-  const setBaseTime = useTheGrandOrderStore((state) => state.setBaseTime);
-  const addScore = useTheGrandOrderStore((state) => state.addScore);
-  const minusScore = useTheGrandOrderStore((state) => state.minusScore);
+  const {
+    pack,
+    questions,
+    answers,
+    score,
+    setView,
+    setTimeLeft,
+    setBaseTime,
+    addScore,
+    minusScore,
+  } = useTheGrandOrderStore((state) => state);
 
   const [isCorrect, setCorrect] = useState(true);
 
@@ -88,7 +90,10 @@ function ResultsView() {
                   <Table.Cell textAlign="center">{user.name}</Table.Cell>
                   <Table.Cell textAlign="center">{user.point}</Table.Cell>
                   <Table.Cell textAlign="center">
-                    <Button onClick={() => attack(user, penalty)}>
+                    <Button
+                      variant="subtle"
+                      onClick={() => attack(user, penalty)}
+                    >
                       Tấn công
                     </Button>
                   </Table.Cell>

@@ -1,9 +1,11 @@
 "use client";
 import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
-import { Box, Button, Flex, Stack } from "@chakra-ui/react";
+import { Button, Flex, Grid, GridItem, Icon } from "@chakra-ui/react";
+import { FaLongArrowAltDown, FaLongArrowAltRight } from "react-icons/fa";
 import { useState } from "react";
 
 function QuestionsView() {
+  const pack = useTheGrandOrderStore((state) => state.pack);
   const questions = useTheGrandOrderStore((state) => state.questions);
   const setView = useTheGrandOrderStore((state) => state.setView);
   const setAnswers = useTheGrandOrderStore((state) => state.setAnswers);
@@ -40,25 +42,69 @@ function QuestionsView() {
     setView(3);
   }
   return (
-    <Box w={500} h="100%" mx="auto">
-      <Flex gap={20} minH={questions.length * 50}>
-        <Stack w="100%">
+    <Flex direction="column">
+      <Flex direction={{ base: "column", md: "row" }} gap={12}>
+        <Grid
+          w="30ch"
+          h={300}
+          templateRows={`repeat(${pack}, 1fr)`}
+          gap={2}
+          borderStyle="dashed"
+          padding={2}
+          borderWidth={1}
+          borderColor="gray"
+          overflow="scroll"
+        >
           {sidePos.map(
             (side, i) =>
               side == 0 && (
-                <Button key={i} onClick={() => handleClickLeft(i)}>
-                  {questionsList[i]}
-                </Button>
+                <GridItem key={i}>
+                  <Button
+                    w="full"
+                    h="full"
+                    padding={2}
+                    textWrap="wrap"
+                    variant="subtle"
+                    onClick={() => handleClickLeft(i)}
+                  >
+                    {questionsList[i]}
+                  </Button>
+                </GridItem>
               ),
           )}
-        </Stack>
-        <Stack w="100%">
+        </Grid>
+        <Icon hideBelow="md" size="lg" alignSelf="center">
+          <FaLongArrowAltRight />
+        </Icon>
+        <Icon hideFrom="md" size="lg" alignSelf="center">
+          <FaLongArrowAltDown />
+        </Icon>
+        <Grid
+          templateRows={`repeat(${pack}, 1fr)`}
+          gap={2}
+          w="30ch"
+          h={300}
+          borderStyle="dashed"
+          padding={2}
+          borderWidth={1}
+          borderColor="gray"
+          overflow="scroll"
+        >
           {ansPos.map((chosen, i) => (
-            <Button key={questionsList[i]} onClick={() => handleClickRight(i)}>
-              {questionsList[chosen]}
-            </Button>
+            <GridItem key={questionsList[i]}>
+              <Button
+                w="full"
+                h="full"
+                padding={2}
+                textWrap="wrap"
+                variant="subtle"
+                onClick={() => handleClickRight(i)}
+              >
+                {questionsList[chosen]}
+              </Button>
+            </GridItem>
           ))}
-        </Stack>
+        </Grid>
       </Flex>
       <br></br>
       <Flex justifyContent="end">
@@ -69,7 +115,7 @@ function QuestionsView() {
           Gửi kết quả
         </Button>
       </Flex>
-    </Box>
+    </Flex>
   );
 }
 

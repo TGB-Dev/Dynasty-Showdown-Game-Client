@@ -16,3 +16,9 @@ declare interface Success {
   attack: boolean;
   defend: boolean;
 }
+
+declare enum CityState {
+  selecting,
+  conquered,
+  unconquered,
+}

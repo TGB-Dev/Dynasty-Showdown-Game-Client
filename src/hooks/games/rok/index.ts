@@ -1,3 +1,4 @@
+import React from "react";
 import { create } from "zustand";
 
 export interface City {
@@ -23,7 +24,9 @@ export interface ROKState {
   question: Question[];
   setQuestion: (question: Question[]) => void;
   questionIndex: number;
-  setQuestionIndex: (questionIndex: number) => void;
+  setQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
+  success: Success;
+  setSuccess: React.Dispatch<React.SetStateAction<Success>>;
   matrix: number[][];
   cities: City[][];
   selectedCity: SelectedCity | null;
@@ -40,7 +43,11 @@ export const useROKStore = create<ROKState>((set) => ({
   question: [{ id: "", question: "", options: [], answer: "" }],
   setQuestion: (question: Question[]) => set({ question }),
   questionIndex: 0,
-  setQuestionIndex: (questionIndex: number) => set({ questionIndex }),
+  setQuestionIndex: (value: React.SetStateAction<number>) =>
+    set((state) => ({
+      questionIndex:
+        typeof value === "function" ? (value as (prevState: number) => number)(state.questionIndex) : value,
+    })),
   matrix: Array(9).fill(Array(9).fill(0)), // Keeping existing matrix for other uses
   cities: INITIAL_CITIES,
   selectedCity: null,

@@ -1,19 +1,64 @@
 import { useROKStore } from "@/hooks/games/rok";
-import { Card, Dialog, Flex, For, Text } from "@chakra-ui/react";
-import React from "react";
-import { FaCircle } from "react-icons/fa";
-import { LuSwords } from "react-icons/lu";
+import { Card, Flex, For, Text } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
+import CountDown from "./CountDown";
+import DialogContent from "./Dialog";
+import AnswerCard from "./AnswerCard";
 
-export default function Attacker() {
-  const options = ["A. Answer", "B. Answer", "C. Answer", "D. Answer"];
-  const colors = ["red.600", "yellow.500", "green.600", "blue.600"];
+export default function Defender() {
+  const [open, setOpen] = useState<OpenState>({
+    defend: true,
+    correct: false,
+    wrong: false,
+  });
 
-  const {} = useROKStore();
+  const {
+    question,
+    questionIndex: i,
+    setScene,
+    setQuestionIndex: setI,
+    setSuccess,
+  } = useROKStore();
+
+  const handleClickAnswer = useCallback(
+    (answer: string) => {
+      const isCorrect = answer === question[i].answer;
+
+      setOpen((prev: OpenState) => ({
+        ...prev,
+        correct: isCorrect,
+        wrong: !isCorrect,
+      }));
+      setSuccess((prev: Success) => ({ ...prev, defend: isCorrect }));
+      setI((prev: number) => prev + 1);
+    },
+    [question, i, setSuccess, setI]
+  );
+
+  const handleOffDialog = useCallback(
+    (dialog: keyof OpenState, callback?: () => void) => {
+      setOpen((prev: OpenState) => ({ ...prev, [dialog]: false }));
+      callback && callback();
+    },
+    []
+  );
+
+  const handleNextScene = useCallback(() => {
+    setScene("main");
+  }, [setScene]);
 
   return (
     <>
       {/* Question Card */}
       <Flex h="100%" direction="column" align="center" gap={4} py={4}>
+        {!open.defend && (
+          <CountDown
+            seconds={20}
+            color="black"
+            callback={() => handleClickAnswer("")}
+            progress
+          />
+        )}
         <Card.Root
           w="100%"
           h="50%"
@@ -24,52 +69,28 @@ export default function Attacker() {
           spaceY={2}
         >
           <Text fontSize={32} fontWeight={600}>
-            Question: 1
+            Question: {question[i].id}
           </Text>
-          <Text>What is your name?</Text>
+          <Text>{question[i].question}</Text>
         </Card.Root>
         <Flex w="100%" h="50%" wrap="wrap" gap={2}>
-          <For each={colors}>
-            {(color, index) => (
-              <Card.Root
-                key={index}
-                w="calc(50% - 4px)"
-                display="flex"
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                bg={color}
-                spaceY={1}
-              >
-                <FaCircle size={24} color="white" />
-                <Text fontSize={16} color="white" px={4} textAlign="center">
-                  {options[index]} {index + 1}
-                </Text>
-              </Card.Root>
+          <For each={question[i].options}>
+            {(question, i) => (
+              <AnswerCard key={i} {...{ question, i, handleClickAnswer }} />
             )}
           </For>
         </Flex>
-      </Flex>
 
-      {/* Attack Dialog */}
-      <Dialog.Root open={false} size="full">
-        <Dialog.Positioner>
-          <Dialog.Content h="100%">
-            <Flex
-              h="100%"
-              direction="column"
-              justify="center"
-              align="center"
-              spaceY={4}
-            >
-              <LuSwords size={64} color="red" />
-              <Text fontSize={24} fontWeight={500} color="red">
-                Attack Turn
-              </Text>
-            </Flex>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
+        {/* Dialogs */}
+        <For each={Object.keys(open) as (keyof OpenState)[]}>
+          {(type) => (
+            <DialogContent
+              key={type}
+              {...{ type, open, question, i, handleOffDialog, handleNextScene }}
+            />
+          )}
+        </For>
+      </Flex>
     </>
   );
 }

@@ -1,20 +1,21 @@
 "use client";
 
-import Attacker from "@/components/games/rok/attacker";
+import Attacker from "@/components/games/rok/Attacker";
 import { useROKStore } from "@/hooks/games/rok";
 import { getAllQuestion } from "@/lib/games/rok";
-import Defender from "@/components/games/rok/defender";
-import Main from "@/components/games/rok/main";
+import Defender from "@/components/games/rok/Defender";
+import Main from "@/components/games/rok/Main";
 import { Container } from "@chakra-ui/react";
 import { useEffect } from "react";
-import Pick from "@/components/games/rok/pick";
+import Pick from "@/components/games/rok/Pick";
 
 export default function RiseOfKingdomPage() {
   const { scene, setQuestion } = useROKStore();
+  const id = '1'
 
   useEffect(() => {
     const fetchQuestion = async () => {
-      setQuestion(await getAllQuestion("1"));
+      setQuestion(await getAllQuestion(id));
     };
     fetchQuestion();
   }, []);

@@ -1,5 +1,6 @@
-import { Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Progress } from "@/components/ui/progress";
+import { Box, Text } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CountDown({
   seconds,
@@ -11,9 +12,12 @@ export default function CountDown({
   callback: () => void;
 }) {
   const [count, setCount] = useState(seconds);
+  const hasCalledBack = useRef(false)
+  const maxCount = seconds;
 
   useEffect(() => {
-    if (count === 0) {
+    if (count === 0 && !hasCalledBack.current) {
+      hasCalledBack.current = true;
       callback();
     }
   }, [count, callback]);
@@ -33,8 +37,16 @@ export default function CountDown({
   }, []);
 
   return (
-    <Text fontSize={16} fontWeight={500} color={color}>
-      {count}
-    </Text>
+    <>
+      {progress ? (
+        <Box w="100%" h="1rem">
+          <Progress h="100%" value={count * (100 / maxCount)} />
+        </Box>
+      ) : (
+        <Text fontSize={16} fontWeight={500} color={color}>
+          {count}
+        </Text>
+      )}
+    </>
   );
 }

@@ -7,18 +7,12 @@ import AnswerCard from "./AnswerCard";
 
 export default function Attacker() {
   const [open, setOpen] = useState<OpenState>({
-    attack: true,
+    attack: false,
     correct: false,
     wrong: false,
   });
 
-  const {
-    question,
-    questionIndex: i,
-    setScene,
-    setQuestionIndex: setI,
-    setSuccess,
-  } = useROKStore();
+  const { question, questionIndex: i, setQuestionIndex } = useROKStore();
 
   const handleClickAnswer = useCallback(
     (answer: string) => {
@@ -51,14 +45,6 @@ export default function Attacker() {
     <>
       {/* Question Card */}
       <Flex h="100%" direction="column" align="center" gap={4} py={4}>
-        {!open.attack && (
-          <CountDown
-            seconds={20}
-            color="black"
-            callback={() => handleClickAnswer("")}
-            progress
-          />
-        )}
         <Card.Root
           w="100%"
           h="50%"

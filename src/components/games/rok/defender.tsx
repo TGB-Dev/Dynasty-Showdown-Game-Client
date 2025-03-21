@@ -6,8 +6,6 @@ import DialogContent from "./Dialog";
 import AnswerCard from "./AnswerCard";
 
 export default function Defender() {
-  const colors = ["red.600", "yellow.500", "green.600", "blue.600"];
-
   const [open, setOpen] = useState<OpenState>({
     defend: true,
     correct: false,

@@ -6,12 +6,10 @@ export default function CountDown({
   seconds,
   color,
   callback,
-  progress,
 }: {
   seconds: number;
   color: string;
   callback: () => void;
-  progress?: boolean;
 }) {
   const [count, setCount] = useState(seconds);
   const hasCalledBack = useRef(false)

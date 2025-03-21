@@ -10,52 +10,34 @@ export default function Attacker() {
   const colors = ["red.600", "yellow.500", "green.600", "blue.600"];
 
   const [open, setOpen] = useState<OpenState>({
-    attack: true,
+    attack: false,
     correct: false,
     wrong: false,
   });
 
-  const {
-    question,
-    questionIndex: i,
-    setScene,
-    setQuestionIndex: setI,
-    setSuccess,
-  } = useROKStore();
+  const { question, questionIndex: i, setQuestionIndex } = useROKStore();
 
-  const handleClickAnswer = (answer: string) => {
-    const isCorrect = answer === question[i].answer;
-
-    setOpen((prev: OpenState) => ({
-      ...prev,
-      correct: isCorrect,
-      wrong: !isCorrect,
-    }));
-    (prev: Success) => ( setSuccess({ ...prev, attack: isCorrect }));
-    (prev: number) =>setI( prev + 1);
+  const handleClickAnswer = async (answer: string) => {
+    if (answer === question[i].answer) {
+      setOpen({ ...open, correct: true });
+    } else {
+      setOpen({ ...open, wrong: true });
+    }
+    setQuestionIndex(i + 1);
   };
 
-  const handleOffDialog = (dialog: keyof OpenState, callback?: () => void) => {
+  const handleOffDialog = (dialog: keyof OpenState) => {
     setOpen({ ...open, [dialog]: false });
-    callback && callback();
   };
 
-  const handleNextScene = () => {
-    setScene("defender");
-  };
+  useEffect(() => {
+    setOpen({ ...open, attack: true });
+  }, []);
 
   return (
     <>
       {/* Question Card */}
       <Flex h="100%" direction="column" align="center" gap={4} py={4}>
-        {!open.attack && (
-          <CountDown
-            seconds={20}
-            color="black"
-            callback={() => handleClickAnswer("")}
-            progress
-          />
-        )}
         <Card.Root
           w="100%"
           h="50%"
@@ -94,8 +76,8 @@ export default function Attacker() {
         </Flex>
 
         {/* Dialogs */}
-        <For each={Object.keys(open) as (keyof OpenState)[]}>
-          {(type) => (
+        {(["attack", "correct", "wrong"] as Array<keyof typeof open>).map(
+          (type) => (
             <Dialog.Root key={type} open={open[type]} size="full">
               <Dialog.Positioner>
                 <Dialog.Content h="100%">
@@ -114,26 +96,26 @@ export default function Attacker() {
                     py={8}
                     onClick={
                       type !== "attack"
-                        ? () => handleOffDialog(type, () => handleNextScene())
+                        ? () => handleOffDialog(type)
                         : undefined
                     }
                   >
                     {type === "attack" && (
                       <>
-                        <Text fontSize={13} fontWeight={400}>
-                          {" "}
-                        </Text>
+                        <CountDown
+                          seconds={3}
+                          color="red"
+                          callback={() => handleOffDialog("attack")}
+                        />
                         <Flex justify="center" align="center">
                           <LuSwords size={72} color="red" />
                           <Text fontSize={24} fontWeight={500} color="red">
                             Attack Turn
                           </Text>
                         </Flex>
-                        <CountDown
-                          seconds={3}
-                          color="red"
-                          callback={() => handleOffDialog("attack")}
-                        />
+                        <Text fontSize={13} fontWeight={400}>
+                          Click anywhere to continue
+                        </Text>
                       </>
                     )}
                     {type === "correct" && (
@@ -141,9 +123,7 @@ export default function Attacker() {
                         <CountDown
                           seconds={3}
                           color="white"
-                          callback={() =>
-                            handleOffDialog("correct", () => handleNextScene())
-                          }
+                          callback={() => handleOffDialog("correct")}
                         />
                         <Flex justify="center" align="center">
                           <Text fontSize={40} fontWeight={500} color="white">
@@ -161,9 +141,7 @@ export default function Attacker() {
                         <CountDown
                           seconds={3}
                           color="white"
-                          callback={() =>
-                            handleOffDialog("wrong", () => handleNextScene())
-                          }
+                          callback={() => handleOffDialog("wrong")}
                         />
                         <Flex justify="center" align="center">
                           <Text fontSize={40} fontWeight={500} color="white">
@@ -188,8 +166,8 @@ export default function Attacker() {
                 </Dialog.Content>
               </Dialog.Positioner>
             </Dialog.Root>
-          )}
-        </For>
+          )
+        )}
       </Flex>
     </>
   );

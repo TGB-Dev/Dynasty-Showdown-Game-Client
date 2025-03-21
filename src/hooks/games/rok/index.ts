@@ -1,3 +1,4 @@
+import React from "react";
 import { create } from "zustand";
 
 export interface ROKState {
@@ -6,9 +7,9 @@ export interface ROKState {
   question: Question[];
   setQuestion: (question: Question[]) => void;
   questionIndex: number;
-  setQuestionIndex: (questionIndex: number) => void;
+  setQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
   success: Success;
-  setSuccess: (success: Success) => void;
+  setSuccess: React.Dispatch<React.SetStateAction<Success>>;
   matrix: number[][];
 }
 
@@ -20,10 +21,20 @@ export const useROKStore = create<ROKState>((set) => ({
   setQuestion: (question: Question[]) => set({ question }),
 
   questionIndex: 0,
-  setQuestionIndex: (questionIndex: number) => set({ questionIndex }),
+  setQuestionIndex: (value: React.SetStateAction<number>) =>
+    set((state) => ({
+      questionIndex:
+        typeof value === "function" ? (value as (prevState: number) => number)(state.questionIndex) : value,
+    })),
 
   success: { attack: false, defend: false },
-  setSuccess: (success: Success) => set({ success }),
+  setSuccess: (success: React.SetStateAction<Success>) =>
+    set((state) => ({
+      success:
+        typeof success === "function"
+          ? (success as (prevState: Success) => Success)(state.success)
+          : success,
+    })),
 
   matrix: [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],

@@ -1,10 +1,9 @@
 import { useROKStore } from "@/hooks/games/rok";
-import { Card, Dialog, Flex, For, Text } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { FaCircle } from "react-icons/fa";
-import { LuSwords } from "react-icons/lu";
-import { RxCheck, RxCross2 } from "react-icons/rx";
-import CountDown from "./countDown";
+import { Card, Flex, For, Text } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
+import CountDown from "./CountDown";
+import DialogContent from "./Dialog";
+import AnswerCard from "./AnswerCard";
 
 export default function Defender() {
   const colors = ["red.600", "yellow.500", "green.600", "blue.600"];
@@ -23,26 +22,32 @@ export default function Defender() {
     setSuccess,
   } = useROKStore();
 
-  const handleClickAnswer = (answer: string) => {
-    const isCorrect = answer === question[i].answer;
+  const handleClickAnswer = useCallback(
+    (answer: string) => {
+      const isCorrect = answer === question[i].answer;
 
-    setOpen((prev: OpenState) => ({
-      ...prev,
-      correct: isCorrect,
-      wrong: !isCorrect,
-    }));
-    (prev: Success) => setSuccess({ ...prev, defend: isCorrect });
-    (prev: number) => setI(prev + 1);
-  };
+      setOpen((prev: OpenState) => ({
+        ...prev,
+        correct: isCorrect,
+        wrong: !isCorrect,
+      }));
+      setSuccess((prev: Success) => ({ ...prev, defend: isCorrect }));
+      setI((prev: number) => prev + 1);
+    },
+    [question, i, setSuccess, setI]
+  );
 
-  const handleOffDialog = (dialog: keyof OpenState, callback?: () => void) => {
-    setOpen({ ...open, [dialog]: false });
-    callback && callback();
-  };
+  const handleOffDialog = useCallback(
+    (dialog: keyof OpenState, callback?: () => void) => {
+      setOpen((prev: OpenState) => ({ ...prev, [dialog]: false }));
+      callback && callback();
+    },
+    []
+  );
 
-  const handleNextScene = () => {
+  const handleNextScene = useCallback(() => {
     setScene("main");
-  };
+  }, [setScene]);
 
   return (
     <>
@@ -73,22 +78,7 @@ export default function Defender() {
         <Flex w="100%" h="50%" wrap="wrap" gap={2}>
           <For each={question[i].options}>
             {(question, i) => (
-              <Card.Root
-                key={i}
-                w="calc(50% - 4px)"
-                display="flex"
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                bg={colors[i]}
-                spaceY={1}
-                onClick={() => handleClickAnswer(question)}
-              >
-                <FaCircle size={24} color="white" />
-                <Text fontSize={16} color="white" px={4} textAlign="center">
-                  {question}
-                </Text>
-              </Card.Root>
+              <AnswerCard key={i} {...{ question, i, handleClickAnswer }} />
             )}
           </For>
         </Flex>
@@ -96,98 +86,10 @@ export default function Defender() {
         {/* Dialogs */}
         <For each={Object.keys(open) as (keyof OpenState)[]}>
           {(type) => (
-            <Dialog.Root key={type} open={open[type]} size="full">
-              <Dialog.Positioner>
-                <Dialog.Content h="100%">
-                  <Flex
-                    h="100%"
-                    direction="column"
-                    justify="space-between"
-                    align="center"
-                    bg={
-                      type === "correct"
-                        ? "green.500"
-                        : type === "wrong"
-                          ? "red.500"
-                          : undefined
-                    }
-                    py={8}
-                    onClick={
-                      type !== "defend"
-                        ? () => handleOffDialog(type, () => handleNextScene())
-                        : undefined
-                    }
-                  >
-                    {type === "defend" && (
-                      <>
-                        <Text fontSize={13} fontWeight={400}>
-                          {" "}
-                        </Text>
-                        <Flex justify="center" align="center">
-                          <LuSwords size={72} color="red" />
-                          <Text fontSize={24} fontWeight={500} color="red">
-                            Defend Turn
-                          </Text>
-                        </Flex>
-                        <CountDown
-                          seconds={3}
-                          color="red"
-                          callback={() => handleOffDialog("defend")}
-                        />
-                      </>
-                    )}
-                    {type === "correct" && (
-                      <>
-                        <CountDown
-                          seconds={3}
-                          color="white"
-                          callback={() =>
-                            handleOffDialog("correct", () => handleNextScene())
-                          }
-                        />
-                        <Flex justify="center" align="center">
-                          <Text fontSize={40} fontWeight={500} color="white">
-                            Correct
-                          </Text>
-                          <RxCheck size={72} color="white" />
-                        </Flex>
-                        <Text fontSize={13} fontWeight={400} color="white">
-                          Click anywhere to continue
-                        </Text>
-                      </>
-                    )}
-                    {type === "wrong" && (
-                      <>
-                        <CountDown
-                          seconds={3}
-                          color="white"
-                          callback={() =>
-                            handleOffDialog("wrong", () => handleNextScene())
-                          }
-                        />
-                        <Flex justify="center" align="center">
-                          <Text fontSize={40} fontWeight={500} color="white">
-                            Incorrect
-                          </Text>
-                          <RxCross2 size={72} color="white" />
-                        </Flex>
-                        <Flex direction="column" align="center" gap={2}>
-                          <Text fontSize={13} fontWeight={400} color="white">
-                            Correct answer:
-                          </Text>
-                          <Text fontSize={16} fontWeight={500} color="white">
-                            {question[i].answer}
-                          </Text>
-                          <Text fontSize={13} fontWeight={400} color="white">
-                            Click anywhere to continue
-                          </Text>
-                        </Flex>
-                      </>
-                    )}
-                  </Flex>
-                </Dialog.Content>
-              </Dialog.Positioner>
-            </Dialog.Root>
+            <DialogContent
+              key={type}
+              {...{ type, open, question, i, handleOffDialog, handleNextScene }}
+            />
           )}
         </For>
       </Flex>

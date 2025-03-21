@@ -1,7 +1,7 @@
 "use client";
 import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
 import { Button, Flex, Grid, GridItem, Icon } from "@chakra-ui/react";
-import { FaLongArrowAltDown, FaLongArrowAltRight } from "react-icons/fa";
+import { FaLongArrowAltRight } from "react-icons/fa";
 import { useState } from "react";
 
 function QuestionsView() {
@@ -42,7 +42,7 @@ function QuestionsView() {
     setView(3);
   }
   return (
-    <Flex direction="column">
+    <Flex direction="column" justifyContent="center">
       <Flex direction={{ base: "column", md: "row" }} gap={12}>
         <Grid
           w="30ch"
@@ -53,7 +53,7 @@ function QuestionsView() {
           padding={2}
           borderWidth={1}
           borderColor="gray"
-          overflow="scroll"
+          overflowY="auto"
         >
           {sidePos.map(
             (side, i) =>
@@ -73,12 +73,14 @@ function QuestionsView() {
               ),
           )}
         </Grid>
-        <Icon hideBelow="md" size="lg" alignSelf="center">
+        <Icon
+          rotate={{ base: "90deg", md: "0deg" }}
+          size="lg"
+          alignSelf="center"
+        >
           <FaLongArrowAltRight />
         </Icon>
-        <Icon hideFrom="md" size="lg" alignSelf="center">
-          <FaLongArrowAltDown />
-        </Icon>
+
         <Grid
           templateRows={`repeat(${pack}, 1fr)`}
           gap={2}
@@ -88,7 +90,7 @@ function QuestionsView() {
           padding={2}
           borderWidth={1}
           borderColor="gray"
-          overflow="scroll"
+          overflowY="auto"
         >
           {ansPos.map((chosen, i) => (
             <GridItem key={questionsList[i]}>

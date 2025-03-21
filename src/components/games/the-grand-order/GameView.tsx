@@ -9,9 +9,9 @@ import ResultsView from "./views/ResultsView";
 function GameView() {
   const view = useTheGrandOrderStore((state) => state.view);
   return (
-    <Stack gap={20} padding={10} fontSize={16}>
+    <Stack h="100vh" overflowY="auto" paddingX={6} paddingY={10}>
       <Timer />
-      <Flex justifyContent="center">
+      <Flex grow="1" justifyContent="center" alignItems="center" paddingY={10}>
         {view === 1 && <PackageView />}
         {view === 2 && <QuestionsView />}
         {view === 3 && <ResultsView />}

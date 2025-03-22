@@ -17,7 +17,7 @@ export default function Attacker() {
     questionIndex: i,
     setScene,
     setQuestionIndex: setI,
-    setSuccess
+    setSuccess,
   } = useROKStore();
 
   const handleClickAnswer = useCallback(
@@ -30,7 +30,7 @@ export default function Attacker() {
         wrong: !isCorrect,
       }));
       setSuccess((prev: Success) => ({ ...prev, attack: isCorrect }));
-      setI((prev: number) => prev + 1);
+      setI((prev: number) => (prev + 1 > question.length - 1 ? 0 : prev + 1));
     },
     [question, i, setSuccess, setI]
   );
@@ -49,12 +49,12 @@ export default function Attacker() {
 
   return (
     <>
+      {console.log(question[i])}
       {/* Question Card */}
       <Flex h="100%" direction="column" align="center" gap={4} py={4}>
         {!open.attack && (
           <CountDown
             seconds={20}
-            color="black"
             callback={() => handleClickAnswer("")}
             progress
           />

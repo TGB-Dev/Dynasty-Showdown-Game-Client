@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from "react";
 
 export default function CountDown({
   seconds,
-  color,
   callback,
-  progress,
+  color = "black",
+  textSize = 16,
+  progress = false,
 }: {
   seconds: number;
-  color: string;
   callback: () => void;
+  color?: string;
+  textSize?: number;
   progress?: boolean;
 }) {
   const [count, setCount] = useState(seconds);
@@ -45,7 +47,7 @@ export default function CountDown({
           <Progress h="100%" value={count * (100 / maxCount)} />
         </Box>
       ) : (
-        <Text fontSize={16} fontWeight={500} color={color}>
+        <Text fontSize={textSize} fontWeight={500} color={color}>
           {count}
         </Text>
       )}

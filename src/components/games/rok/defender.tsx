@@ -29,8 +29,8 @@ export default function Defender() {
         correct: isCorrect,
         wrong: !isCorrect,
       }));
-      setSuccess((prev: Success) => ({ ...prev, attack: isCorrect }));
-      setI((prev: number) => prev + 1);
+      setSuccess((prev: Success) => ({ ...prev, defend: isCorrect }));
+      setI((prev: number) => (prev + 1 > question.length - 1 ? 0 : prev + 1));
     },
     [question, i, setSuccess, setI]
   );
@@ -54,7 +54,6 @@ export default function Defender() {
         {!open.defend && (
           <CountDown
             seconds={20}
-            color="black"
             callback={() => handleClickAnswer("")}
             progress
           />

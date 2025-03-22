@@ -29,7 +29,7 @@ export default function Defender() {
         correct: isCorrect,
         wrong: !isCorrect,
       }));
-      setSuccess((prev: Success) => ({ ...prev, defend: isCorrect }));
+      setSuccess((prev: Success) => ({ ...prev, attack: isCorrect }));
       setI((prev: number) => prev + 1);
     },
     [question, i, setSuccess, setI]
@@ -69,7 +69,7 @@ export default function Defender() {
           spaceY={2}
         >
           <Text fontSize={32} fontWeight={600}>
-            Question: {question[i].id}
+            Question: {i + 1}
           </Text>
           <Text>{question[i].question}</Text>
         </Card.Root>

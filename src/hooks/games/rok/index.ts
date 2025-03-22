@@ -1,16 +1,6 @@
 import React from "react";
 import { create } from "zustand";
 
-export interface City {
-  resources: number;
-  ownedBy: string | null;
-}
-
-export interface SelectedCity {
-  row: number;
-  col: number;
-}
-
 const INITIAL_CITIES: City[][] = Array.from({ length: 9 }, () =>
   Array.from({ length: 9 }, () => ({
     resources: Math.floor(Math.random() * 100),
@@ -18,35 +8,26 @@ const INITIAL_CITIES: City[][] = Array.from({ length: 9 }, () =>
   }))
 );
 
-export interface ROKState {
-  scene: string;
-  setScene: (scene: string) => void;
-  question: Question[];
-  setQuestion: (question: Question[]) => void;
-  questionIndex: number;
-  setQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
-  success: Success;
-  setSuccess: React.Dispatch<React.SetStateAction<Success>>;
-  matrix: number[][];
-  cities: City[][];
-  selectedCity: SelectedCity | null;
-  turn: number;
-  setTurn: (turn: number) => void;
-  setCities: (cities: City[][]) => void;
-  setSelectedCity: (selectedCity: SelectedCity | null) => void;
-  attackCity: () => void;
-}
-
 export const useROKStore = create<ROKState>((set) => ({
-  scene: "pick",
+  scene: "main",
   setScene: (scene: string) => set({ scene }),
+  success: { attack: false, defend: false },
+  setSuccess: (success: React.SetStateAction<Success>) =>
+    set((state) => ({
+      success:
+        typeof success === "function"
+          ? (success as (prevState: Success) => Success)(state.success)
+          : success,
+    })),
   question: [{ id: "", question: "", options: [], answer: "" }],
   setQuestion: (question: Question[]) => set({ question }),
   questionIndex: 0,
   setQuestionIndex: (value: React.SetStateAction<number>) =>
     set((state) => ({
       questionIndex:
-        typeof value === "function" ? (value as (prevState: number) => number)(state.questionIndex) : value,
+        typeof value === "function"
+          ? (value as (prevState: number) => number)(state.questionIndex)
+          : value,
     })),
   matrix: Array(9).fill(Array(9).fill(0)), // Keeping existing matrix for other uses
   cities: INITIAL_CITIES,

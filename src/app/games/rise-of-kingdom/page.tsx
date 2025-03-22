@@ -7,11 +7,11 @@ import Defender from "@/components/games/rok/Defender";
 import Main from "@/components/games/rok/Main";
 import { Container } from "@chakra-ui/react";
 import { useEffect } from "react";
-import Pick from "@/components/games/rok/Pick";
+import Pick from "@/components/games/rok/pick";
 
 export default function RiseOfKingdomPage() {
   const { scene, setQuestion } = useROKStore();
-  const id = '1'
+  const id = "1";
 
   useEffect(() => {
     const fetchQuestion = async () => {

@@ -1,9 +1,9 @@
 import { useROKStore } from "@/hooks/games/rok";
 import { Card, Flex, For, Text } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import CountDown from "./CountDown";
 import DialogContent from "./Dialog";
 import AnswerCard from "./AnswerCard";
+import CountDown from "./countDown";
 
 export default function Attacker() {
   const [open, setOpen] = useState<OpenState>({

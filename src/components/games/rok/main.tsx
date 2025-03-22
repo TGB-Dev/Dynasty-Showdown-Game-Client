@@ -3,13 +3,25 @@ import { Card, CloseButton, Dialog, Flex, For, Text } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 
 export default function Main() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState({ starter: true });
 
   return (
     <Flex direction="column" justify="center" align="center" w="100%" h="100vh">
+      {/* Main Card */}
+      <Flex
+        direction="column"
+        justify="center"
+        align="center"
+        w="100%"
+        h="100%"
+      >
+        <Card.Root w="100%" h="100%" p={4}></Card.Root>
+      </Flex>
+
+      {/* Starter dialog */}
       <Dialog.Root
-        open={open}
-        onOpenChange={({ open }) => setOpen(open)}
+        open={open.starter}
+        onOpenChange={(prev) => setOpen({ starter: !prev })}
         size="cover"
       >
         <Dialog.Backdrop />
@@ -30,13 +42,33 @@ export default function Main() {
               align="center"
               py={16}
             >
-              <Flex direction="column" justify="center" align="center">
-                <Text fontSize='min(1rem, max(4vh, 2rem)' fontWeight={600}>
+              <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                spaceY={4}
+              >
+                <Text fontSize={{ base: 24, md: 32 }} fontWeight={600}>
                   Rise of kingdom
                 </Text>
-                <Text fontSize={{ base: 12, md: 24 }} fontWeight={400}>
+                <Text
+                  fontSize={{ base: 14, md: 20 }}
+                  fontWeight={300}
+                  lineHeight={1.5}
+                  textAlign="center"
+                  px={12}
+                >
                   A strategy game where you can build your own kingdom
                 </Text>
+              </Flex>
+              <Flex
+                w="100%"
+                h="50%"
+                direction="column"
+                justify="center"
+                align="center"
+              >
+                Some demo pictures here
               </Flex>
             </Flex>
           </Dialog.Content>
@@ -45,40 +77,3 @@ export default function Main() {
     </Flex>
   );
 }
-
-// <Flex
-//   direction={"column"}
-//   align={"center"}
-//   w={"100%"}
-//   h={"100vh"}
-//   pt={16}
-//   spaceY={6}
-// >
-//   <Text fontSize={48} fontWeight={600}>
-//     Rise of kingdom
-//   </Text>
-//   <Flex direction={"column"}>
-//     <For each={matrix}>
-//       {(items, i) => (
-//         <Flex key={i} direction={"row"}>
-//           <For each={items}>
-//             {(item, is) => (
-//               <Card.Root
-//                 key={is}
-//                 w={"3rem"}
-//                 h={"3rem"}
-//                 display={"flex"}
-//                 justifyContent={"center"}
-//                 alignItems={"center"}
-//                 p={4}
-//                 m={0.5}
-//               >
-//                 {item}
-//               </Card.Root>
-//             )}
-//           </For>
-//         </Flex>
-//       )}
-//     </For>
-//   </Flex>
-// </Flex>

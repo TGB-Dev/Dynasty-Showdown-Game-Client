@@ -1,7 +1,7 @@
 import { useROKStore } from "@/hooks/games/rok";
 import { Card, Flex, For, Text } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import CountDown from "./CountDown";
+import CountDown from "./countDown";
 import DialogContent from "./Dialog";
 import AnswerCard from "./AnswerCard";
 

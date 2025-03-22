@@ -1,7 +1,7 @@
 import { Dialog, Flex, Text } from "@chakra-ui/react";
 import { LuShield, LuSwords } from "react-icons/lu";
 import { RxCheck, RxCross2 } from "react-icons/rx";
-import CountDown from "./CountDown";
+import CountDown from "./countDown";
 
 export default function DialogContent({
   type,

@@ -52,6 +52,7 @@ function QuestionsView() {
           borderStyle="dashed"
           padding={2}
           borderWidth={1}
+          borderRadius="md"
           borderColor="gray"
           overflowY="auto"
         >
@@ -87,6 +88,7 @@ function QuestionsView() {
           w="30ch"
           h={300}
           borderStyle="dashed"
+          borderRadius="md"
           padding={2}
           borderWidth={1}
           borderColor="gray"

@@ -54,39 +54,38 @@ export default function Pick() {
 
   return (
     <Flex direction={"column"} justify={"center"} align={"center"} p={4}>
-      <Text fontSize={48} fontWeight={600}>
+      <Text fontSize={{ base: 32, md: 48 }} fontWeight={600}>
         Rise of kingdom, scene: {scene}
       </Text>
       <Text mb={2}>Time left: {timer} second</Text>
 
 
       <Box mt={8}>
-        <Grid templateColumns="repeat(9, 1fr)" gap={2}>
+        <Grid templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(6, 1fr)", lg: "repeat(9, 1fr)" }} gap={2}>
           {cities.map((row, rowIndex) =>
             row.map((city, colIndex) => (
-              <Box
-                key={`${rowIndex}-${colIndex}`}
-                bg={
-                  city.ownedBy
-                    ? city.ownedBy === "Your Team"
-                      ? "green.200"
-                      : "gray.500"
-                    : "gray.200"
-                }
-                p={4}
-                textAlign="center"
-                onClick={() => handleCityClick(rowIndex, colIndex)}
-                cursor={
-                  city.ownedBy === null && !isLocked ? "pointer" : "not-allowed"
-                }
-                border={
-                  selectedCity &&
-                  selectedCity.row === rowIndex &&
-                  selectedCity.col === colIndex
-                    ? "2px solid blue"
-                    : "none"
-                }
-              >
+          <Box
+            key={`${rowIndex}-${colIndex}`}
+            bg={
+              city.ownedBy
+                ? city.ownedBy === "Your Team"
+                  ? "green.200"
+                  : "gray.500"
+                : "gray.200"
+            }
+            p={{ base: 2, md: 4 }}
+            textAlign="center"
+            onClick={() => handleCityClick(rowIndex, colIndex)}
+            cursor={city.ownedBy === null && !isLocked ? "pointer" : "not-allowed"}
+            border={
+              selectedCity &&
+              selectedCity.row === rowIndex &&
+              selectedCity.col === colIndex
+                ? "2px solid blue"
+                : "none"
+            }
+          >
+
                 <Text>{city.resources} resources</Text>
                 <Text>
                   {city.ownedBy ? `Owned by: ${city.ownedBy}` : "Unclaimed"}

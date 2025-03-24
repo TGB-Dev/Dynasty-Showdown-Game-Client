@@ -1,4 +1,3 @@
-import { useGameView } from "@/components/games/cuoc-dua-vuong-quyen/GameView";
 import { LuSendHorizontal } from "react-icons/lu";
 
 import {
@@ -13,26 +12,8 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { Question, QuestionType } from "@/types/question.types";
-import { create } from "zustand/index";
-
-interface QuestionState {
-  question: Question;
-}
-
-const useQuestionStore = create<QuestionState>((set) => ({
-  question: {
-    id: "1",
-    content: "What is the capital of Vietnam?",
-    answers: [
-      "Hanoi",
-      "Ho Chi Minh City, Southern. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet",
-      "Da Nang",
-      "Hue",
-    ],
-    type: QuestionType.MultipleChoices,
-  },
-}));
+import { useGameView, useQuestionStore } from "@/hooks/games/useCDVQStore";
+import { QuestionType } from "@/types/question.types";
 
 export default function QuestionView() {
   const nextView = useGameView((state) => state.nextView);

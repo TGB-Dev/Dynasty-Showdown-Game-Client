@@ -6,11 +6,14 @@ export enum GameViews {
   Results,
 }
 export interface GameViewsStates {
+  timeLeft: number;
   view: GameViews;
   nextView: () => void;
+  setTimeLeft: (time: number) => void;
 }
 
 export const useGameView = create<GameViewsStates>((set) => ({
+  timeLeft: 0,
   view: GameViews.Question,
   nextView: () => {
     set((state) => ({
@@ -20,10 +23,17 @@ export const useGameView = create<GameViewsStates>((set) => ({
           : GameViews.Question,
     }));
   },
+  setTimeLeft: (time) => {
+    set((state) => ({
+      timeLeft: time,
+    }));
+  },
 }));
 
 interface QuestionState {
   question: Question;
+  chosenAnswer: string | null;
+  setChosenAnswer: (answer: string) => void;
 }
 
 export const useQuestionStore = create<QuestionState>((set) => ({
@@ -36,6 +46,14 @@ export const useQuestionStore = create<QuestionState>((set) => ({
       "Da Nang",
       "Hue",
     ],
+    correctAnswer: "Hanoi",
     type: QuestionType.MultipleChoices,
+  },
+
+  chosenAnswer: null,
+  setChosenAnswer: (answer) => {
+    set((state) => ({
+      chosenAnswer: answer,
+    }));
   },
 }));

@@ -16,7 +16,7 @@ export default function GameView() {
           <QuestionView />
         </Show>
 
-        <Show when={view === GameViews.Waiting}>
+        <Show when={view === GameViews.Results}>
           <WaitingView />
         </Show>
       </Box>

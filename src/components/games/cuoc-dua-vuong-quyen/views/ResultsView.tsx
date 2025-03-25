@@ -1,5 +1,5 @@
 function ResultsView() {
-  return <div>waiting view</div>;
+  return <div>Results view</div>;
 }
 
 export default ResultsView;

@@ -75,7 +75,7 @@ export default function Pick() {
       </Text>
 
       <CountDown
-        seconds={5}
+        seconds={30}
         callback={handleAutoLockCity}
         color="black"
         textSize={24}

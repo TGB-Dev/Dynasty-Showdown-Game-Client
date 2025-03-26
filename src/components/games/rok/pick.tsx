@@ -1,31 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useROKStore } from "@/hooks/games/rok";
 import { Flex, Grid, Box, Button, Text } from "@chakra-ui/react";
+import CountDown from "./countDown";
 
 export default function Pick() {
-  const { cities, selectedCity, setSelectedCity, setCities, setScene, scene } =
+  const { cities, selectedCity, setSelectedCity, setCities, setScene, scene, currentTeam } =
     useROKStore();
-  const [timer, setTimer] = useState(30);
   const [isLocked, setIsLocked] = useState(false);
-
-  useEffect(() => {
-    if (timer > 0) {
-      const countdown = setTimeout(() => setTimer(timer - 1), 1000);
-      return () => clearTimeout(countdown);
-    } else if (timer === 0 && selectedCity && !isLocked) {
-      handleAutoLockCity();
-    }
-  }, [timer, isLocked]);
-
-  useEffect(() => {
-    if (isLocked && timer === 0) {
-      const waitForSceneChange = setTimeout(() => {
-        setScene("attacker");
-      }, 3000);
-
-      return () => clearTimeout(waitForSceneChange);
-    }
-  }, [isLocked, timer]);
 
   const handleCityClick = (row: number, col: number) => {
     if (!isLocked && cities[row][col].ownedBy === null) {
@@ -33,14 +14,36 @@ export default function Pick() {
     }
   };
 
+  const selectNextAvailableCity = () => {
+    for (let i = 0; i < cities.length; i++) {
+      for (let j = 0; j < cities[i].length; j++) {
+        if (cities[i][j].ownedBy === null) {
+          setSelectedCity({ row: i, col: j });
+          return { row: i, col: j };
+        }
+      }
+    }
+    return null;
+  };
+
   const handleAutoLockCity = () => {
-    if (selectedCity) {
+    let cityToLock = selectedCity;
+  
+    // If no city is selected, choose the next available one
+    if (!selectedCity) {
+      cityToLock = selectNextAvailableCity();
+    }
+  
+    if (cityToLock) {
       const updatedCities = [...cities];
-      updatedCities[selectedCity.row][selectedCity.col].ownedBy = "Your teamm";
+      updatedCities[cityToLock.row][cityToLock.col].ownedBy = currentTeam;
       setCities(updatedCities);
       setIsLocked(true);
+      setTimeout(() => {
+        setScene("attacker");
+      }, 2000);
     }
-  };
+  };  
 
   const handleUnlockCity = () => {
     if (selectedCity) {
@@ -49,6 +52,19 @@ export default function Pick() {
       setCities(updatedCities);
       setSelectedCity(null);
       setIsLocked(false);
+    } else {
+      for (let i = 0; i < cities.length; i++) {
+        for (let j = 0; j < cities[i].length; j++) {
+          if (cities[i][j].ownedBy === null) {
+            setSelectedCity({ row: i, col: j });
+            const updatedCities = [...cities];
+            updatedCities[i][j].ownedBy = currentTeam;
+            setCities(updatedCities);
+            setIsLocked(true);
+            return;
+          }
+        }
+      }
     }
   };
 
@@ -57,35 +73,48 @@ export default function Pick() {
       <Text fontSize={{ base: 32, md: 48 }} fontWeight={600}>
         Rise of kingdom, scene: {scene}
       </Text>
-      <Text mb={2}>Time left: {timer} second</Text>
 
+      <CountDown
+        seconds={5}
+        callback={handleAutoLockCity}
+        color="black"
+        textSize={24}
+      />
 
       <Box mt={8}>
-        <Grid templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(6, 1fr)", lg: "repeat(9, 1fr)" }} gap={2}>
+        <Grid
+          templateColumns={{
+            base: "repeat(3, 1fr)",
+            md: "repeat(6, 1fr)",
+            lg: "repeat(9, 1fr)",
+          }}
+          gap={2}
+        >
           {cities.map((row, rowIndex) =>
             row.map((city, colIndex) => (
-          <Box
-            key={`${rowIndex}-${colIndex}`}
-            bg={
-              city.ownedBy
-                ? city.ownedBy === "Your Team"
+              <Box
+                key={`${rowIndex}-${colIndex}`}
+                bg={
+                  city.ownedBy === currentTeam
                   ? "green.200"
-                  : "gray.500"
-                : "gray.200"
-            }
-            p={{ base: 2, md: 4 }}
-            textAlign="center"
-            onClick={() => handleCityClick(rowIndex, colIndex)}
-            cursor={city.ownedBy === null && !isLocked ? "pointer" : "not-allowed"}
-            border={
-              selectedCity &&
-              selectedCity.row === rowIndex &&
-              selectedCity.col === colIndex
-                ? "2px solid blue"
-                : "none"
-            }
-          >
-
+                  : city.ownedBy
+                  ? "gray.500"
+                  : "gray.200"
+                }
+                p={{ base: 2, md: 4 }}
+                textAlign="center"
+                onClick={() => handleCityClick(rowIndex, colIndex)}
+                cursor={
+                  city.ownedBy === null && !isLocked ? "pointer" : "not-allowed"
+                }
+                border={
+                  selectedCity &&
+                  selectedCity.row === rowIndex &&
+                  selectedCity.col === colIndex
+                    ? "2px solid blue"
+                    : "none"
+                }
+              >
                 <Text>{city.resources} resources</Text>
                 <Text>
                   {city.ownedBy ? `Owned by: ${city.ownedBy}` : "Unclaimed"}
@@ -96,15 +125,11 @@ export default function Pick() {
         </Grid>
 
         {isLocked ? (
-          <Button mt={4} onClick={handleUnlockCity} disabled={timer === 0}>
-            Unlock CCity
+          <Button mt={4} onClick={handleUnlockCity}>
+            Unlock City
           </Button>
         ) : (
-          <Button
-            mt={4}
-            onClick={handleAutoLockCity}
-            disabled={!selectedCity || timer === 0}
-          >
+          <Button mt={4} onClick={handleAutoLockCity} disabled={!selectedCity}>
             Lock City
           </Button>
         )}

@@ -27,7 +27,8 @@ export default function Main() {
       p={16}
     >
       {/* Some details */}
-      <CountDown seconds={20} callback={handleNextScene} textSize={24} />
+      <Text>Turn: {turn}</Text>
+      <CountDown seconds={1} callback={handleNextScene} textSize={24} />
       <Flex
         direction="column"
         justify="center"

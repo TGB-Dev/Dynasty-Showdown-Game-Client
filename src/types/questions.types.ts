@@ -1,5 +1,5 @@
-export interface Question {
-  id: number;
-  question: string;
-  answer: number;
+export interface InputQuestion {
+  id: string;
+  content: string;
+  correctAnswer: string;
 }

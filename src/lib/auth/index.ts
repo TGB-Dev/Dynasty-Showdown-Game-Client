@@ -1,11 +1,12 @@
-import axios from "axios";
 import Cookies from "js-cookie";
+import { requests } from "../requests";
 export async function login(credential: {
   username: string;
   password: string;
 }) {
   try {
-    axios
+    console.log("IN");
+    requests
       .post("/auth/signIn", {
         username: credential.username,
         password: credential.password,

@@ -2,7 +2,6 @@
 import { useMCHGStore } from "@/hooks/games/useMCHGStore";
 import {
   Grid,
-  Stack,
   Image,
   GridItem,
   Box,
@@ -13,31 +12,31 @@ import {
 import { useState } from "react";
 
 function QuestionsView() {
+  const obstacle = useMCHGStore((state) => state.obstacle);
   const questions = useMCHGStore((state) => state.questions);
-  const setAnswer = useMCHGStore((state) => state.setAnswer);
-  const [clicked, setClicked] = useState(["", "", "", "", "", ""]);
+  const answers = useMCHGStore((state) => state.answers);
+  const setAnswers = useMCHGStore((state) => state.setAnswers);
+  const addScore = useMCHGStore((state) => state.addScore);
+  const setView = useMCHGStore((state) => state.setView);
+
   const [choice, setChoice] = useState(-1);
   const [input, setInput] = useState("");
   function handleClick(index: number) {
+    setInput("");
     setChoice(index);
   }
 
   function handleSubmit(answer: string) {
+    const newAnswers = [...answers];
     if (answer == questions[choice].correctAnswer) {
-      setClicked(() => {
-        const temp = [...clicked];
-        temp[choice] = answer;
-        return temp;
-      });
+      newAnswers[choice] = answer;
+      addScore(15);
     } else {
-      setClicked(() => {
-        const temp = [...clicked];
-        temp[choice] = "";
-        return temp;
-      });
+      newAnswers[choice] = null;
     }
+    setAnswers(newAnswers);
+    setChoice(-1);
     setInput("");
-    setAnswer(answer);
   }
   return (
     <Flex direction="column">
@@ -60,14 +59,16 @@ function QuestionsView() {
               length: 6,
             }).map((_, index) => (
               <GridItem key={`pic${index}`} width="full" height="full">
-                {clicked[index] == "" && (
+                {(answers[index] == "" || answers[index] == null) && (
                   <Button
                     width="full"
                     height="full"
                     borderRadius="none"
-                    onClick={() => handleClick(index)}
                     backgroundColor="teal"
-                    disabled={clicked[index] == null}
+                    opacity={1}
+                    onClick={() => handleClick(index)}
+                    disabled={answers[index] == null}
+                    fontWeight="bold"
                   >
                     {index + 1}
                   </Button>
@@ -75,11 +76,13 @@ function QuestionsView() {
               </GridItem>
             ))}
           </Grid>
-          <Image
-            src="https://picsum.photos/2000/2000"
-            aspectRatio={3 / 2}
-            alt="ansPic"
-          ></Image>
+          <Box aspectRatio={3 / 2}>
+            <Image
+              src="https://picsum.photos/2000/2000"
+              aspectRatio={3 / 2}
+              alt="ansPic"
+            ></Image>
+          </Box>
         </GridItem>
         <GridItem>
           <Flex
@@ -89,7 +92,7 @@ function QuestionsView() {
             gapY={10}
             height="full"
           >
-            <Box fontWeight="bold">CHƯỚNG NGẠI VẬT CÓ 5 CHỮ CÁI</Box>
+            <Box as="b">CHƯỚNG NGẠI VẬT CÓ {obstacle.length} CHỮ CÁI</Box>
             <Grid
               direction="column"
               width="full"
@@ -111,11 +114,11 @@ function QuestionsView() {
                             key={`${index} ${dash}`}
                             borderBottomWidth={2}
                             borderColor="white"
-                            width={50}
+                            width={6}
                             textAlign="center"
                             fontWeight="bold"
                           >
-                            {clicked[index] == question.correctAnswer
+                            {answers[index] == question.correctAnswer
                               ? question.correctAnswer[dash]
                               : ""}
                           </Box>
@@ -134,9 +137,9 @@ function QuestionsView() {
               justifyContent="center"
               alignItems="center"
               direction="column"
-              gapY={10}
+              gapY={6}
               width="full"
-              padding={8}
+              padding={6}
             >
               <Box fontWeight="bold">Trả lời câu hỏi {choice + 1}</Box>
               <Box>{questions[choice].content}</Box>
@@ -149,14 +152,17 @@ function QuestionsView() {
               >
                 <Input
                   onChange={(e) => setInput(e.target.value)}
+                  value={input}
                   width="full"
                   maxW="lg"
                   placeholder="Đáp án..."
                 ></Input>
-                <Button alignSelf="end" onClick={() => handleSubmit(input)}>
-                  Gửi đáp án
-                </Button>
+                <Button onClick={() => handleSubmit(input)}>Gửi đáp án</Button>
               </Flex>
+
+              <Button colorPalette="yellow" onClick={() => setView(2)}>
+                Bấm chuông
+              </Button>
             </Flex>
           </GridItem>
         )}

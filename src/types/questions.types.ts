@@ -3,3 +3,8 @@ export interface InputQuestion {
   content: string;
   correctAnswer: string;
 }
+
+export interface MCHGObstacle {
+  length: number;
+  correctAnswer: string;
+}

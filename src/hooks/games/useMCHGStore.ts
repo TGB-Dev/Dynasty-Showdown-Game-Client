@@ -1,17 +1,18 @@
-import { InputQuestion } from "@/types/questions.types";
+import { InputQuestion, MCHGObstacle } from "@/types/questions.types";
 import { create } from "zustand";
 
 export interface MCHGStates {
   view: number;
+  obstacle: MCHGObstacle;
   questions: InputQuestion[];
-  answer: string;
+  answers: Partial<null | string>[];
   baseTime: number;
   timeLeft: number;
   score: number;
 
   setView: (view: number) => void;
   setQuestions: (questions: InputQuestion[]) => void;
-  setAnswer: (answer: string) => void;
+  setAnswers: (answers: Partial<null | string>[]) => void;
   setBaseTime: (time: number) => void;
   setTimeLeft: (time: number) => void;
   addScore: (score: number) => void;
@@ -20,6 +21,10 @@ export interface MCHGStates {
 
 export const useMCHGStore = create<MCHGStates>((set) => ({
   view: 1,
+  obstacle: {
+    length: 3,
+    correctAnswer: "TGB",
+  },
   questions: [
     {
       id: "1",
@@ -37,7 +42,7 @@ export const useMCHGStore = create<MCHGStates>((set) => ({
       correctAnswer: "Hanoi",
     },
   ],
-  answer: "",
+  answers: ["", "", "", "", "", ""],
   baseTime: 1,
   timeLeft: 1,
   score: 0,
@@ -52,9 +57,9 @@ export const useMCHGStore = create<MCHGStates>((set) => ({
       questions: (state.questions = questions),
     }));
   },
-  setAnswer: (answer) => {
+  setAnswers: (answers) => {
     set((state) => ({
-      answer: (state.answer = answer),
+      answers: (state.answers = answers),
     }));
   },
   setTimeLeft: (timeLeft) => {

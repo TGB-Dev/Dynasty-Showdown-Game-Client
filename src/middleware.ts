@@ -4,15 +4,21 @@ import { UserRole } from "@/types/user-role.enum";
 
 export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
-  const userRole = await getUserRole(accessToken);
 
-  if (userRole === null)
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  try {
+    const userRole = await getUserRole(accessToken);
 
-  if (
-    request.nextUrl.pathname.startsWith("/admin") &&
-    userRole !== UserRole.ADMIN
-  ) {
+    if (userRole === null)
+      return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+
+    if (
+      request.nextUrl.pathname.startsWith("/admin") &&
+      userRole !== UserRole.ADMIN
+    ) {
+      return NextResponse.error();
+    }
+  } catch {
+    console.error("Server down");
     return NextResponse.error();
   }
 

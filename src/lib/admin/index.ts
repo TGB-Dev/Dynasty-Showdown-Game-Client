@@ -1,5 +1,6 @@
 import { Game } from "@/types/games.enum";
 import type { User } from "@/types/user.types";
+import { requests } from "../requests";
 
 export const FETCH_USERS_API_PATH = "/api/users";
 
@@ -9,10 +10,29 @@ export function checkForAdminAccess() {
 
 export async function startGame(game: Game) {
   console.log("Starting game:", game);
+  let gameLink = "";
+  if (game == Game.CuocDuaVuongQuyen) {
+    gameLink = "cdvq";
+  } else if (game == Game.MatChieuHoangGia) {
+    gameLink = "mchg";
+  } else if (game == Game.RiseOfKingdom) {
+    gameLink = "rok";
+  } else {
+    gameLink = "tgo";
+  }
+
+  try {
+    requests.post(`/admin/start-game/${gameLink}`);
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+export async function runGame(game: Game) {
+  console.log("Running game:", game);
 
   await new Promise((res) => setTimeout(res, 1000));
-  if (game === Game.RiseOfKingdom) throw new Error();
-
   return true;
 }
 

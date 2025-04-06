@@ -8,9 +8,9 @@ export const middlewareRequest = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_HOST,
 });
 
-export const getUserRole = async (
+export async function getUserRole(
   accessToken?: string,
-): Promise<UserRole | null> => {
+): Promise<UserRole | null> {
   if (!accessToken) {
     return null;
   }
@@ -21,5 +21,5 @@ export const getUserRole = async (
     },
   });
 
-  return response.data;
-};
+  return response.data.role;
+}

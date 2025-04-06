@@ -4,6 +4,7 @@ function InGameWaitingRoom() {
   const currentGame: () => string = () => {
     return Game.MatChieuHoangGia;
   };
+
   return (
     <Flex
       width="100vw"

@@ -1,6 +1,6 @@
 import { Button, Dialog, Portal } from "@chakra-ui/react";
 import type { Game } from "@/types/games.enum";
-import { startGame } from "@/lib/admin";
+import { runGame, startGame } from "@/lib/admin";
 import { toaster } from "@/components/ui/toaster";
 import { useEffect, useState } from "react";
 import useSWRMutation from "swr/mutation";
@@ -26,7 +26,8 @@ function StartGameConfirmDialog({
   game,
   children,
 }: StartGameConfirmDialogProps) {
-  const { trigger } = useGameToast(game);
+  const triggerStart = useGameToast(game, useStartGameMutation);
+  const triggerRun = useGameToast(game, useRunGameMutation);
 
   return (
     <Dialog.Root role="alertdialog">
@@ -44,18 +45,24 @@ function StartGameConfirmDialog({
             </Dialog.Body>
 
             <Dialog.Footer>
-              <Dialog.CloseTrigger asChild>
-                <Button variant="outline">Cancel</Button>
-              </Dialog.CloseTrigger>
-
               <Dialog.ActionTrigger asChild>
                 <Button
                   colorPalette="primary"
                   onClick={() => {
-                    void trigger();
+                    void triggerStart.trigger();
                   }}
                 >
-                  Confirm
+                  Start game
+                </Button>
+              </Dialog.ActionTrigger>
+              <Dialog.ActionTrigger asChild>
+                <Button
+                  colorPalette="primary"
+                  onClick={() => {
+                    void triggerRun.trigger();
+                  }}
+                >
+                  Run game
                 </Button>
               </Dialog.ActionTrigger>
             </Dialog.Footer>
@@ -66,13 +73,19 @@ function StartGameConfirmDialog({
   );
 }
 
-function useGameToast(game: Game) {
-  const { data, trigger, isMutating, error } = useSWRMutation(
-    "/start/game",
-    async () => {
-      return await startGame(game);
-    },
-  );
+function useStartGameMutation(game: Game) {
+  return useSWRMutation("/start/game", async () => {
+    return await startGame(game);
+  });
+}
+
+function useRunGameMutation(game: Game) {
+  return useSWRMutation("/run/game", async () => {
+    return await runGame(game);
+  });
+}
+function useGameToast(game: Game, mutateFunc: (game: Game) => any) {
+  const { data, trigger, isMutating, error } = mutateFunc(game);
 
   const [toastId, setToastId] = useState<string | undefined>(undefined);
 

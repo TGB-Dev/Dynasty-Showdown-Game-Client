@@ -1,6 +1,6 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import prettierRecommended from "eslint-plugin-prettier/recommended";
+import prettierRecommended from "eslint-plugin-prettier/recommended"
 import love from "eslint-config-love";
 import { FlatCompat } from "@eslint/eslintrc";
 
@@ -13,25 +13,24 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ["src/components/ui/*"],
+    ignores: ["src/components/ui/*"]
   },
 
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 
-  love,
-  prettierRecommended,
+  {
+    ...love,
+    ...prettierRecommended,
+  },
 
   {
     rules: {
       "@typescript-eslint/explicit-function-return-type": "off",
-    },
-    "prettier/prettier": [
-      "error",
-      {
-        endOfLine: "auto",
-      },
-    ],
-  },
+      "@typescript-eslint/no-magic-numbers": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/no-empty-object-type": "off"
+    }
+  }
 ];
 
 export default eslintConfig;

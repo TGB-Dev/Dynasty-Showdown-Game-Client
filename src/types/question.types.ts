@@ -1,12 +1,11 @@
 export enum QuestionType {
-  MultipleChoices,
-  Input,
+  MultipleChoices = "multiple-choice",
+  Input = "short-answer",
 }
 
 export interface Question {
-  id: string;
   content: string;
-  answers: string[];
-  correctAnswer: string;
+  answers?: string[];
+  correctAnswer?: string;
   type: QuestionType;
 }

@@ -14,11 +14,15 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useGameView, useQuestionStore } from "@/hooks/games/useCDVQStore";
+import { useCdvqView } from "@/hooks/games/cdvq/useCdvqView";
 import { QuestionType } from "@/types/question.types";
 import { useState } from "react";
+import { useCdvqQuestionStore } from "@/hooks/games/cdvq/useCdvqQuestionStore";
+import { useCdvqTimer } from "@/hooks/games/cdvq/useCdvqTimer";
 
 export default function QuestionView() {
+  const { timeLeft } = useCdvqTimer((state) => state);
+
   return (
     <Grid
       minW="100vw"
@@ -28,7 +32,7 @@ export default function QuestionView() {
       userSelect="none"
     >
       <GridItem>
-        <Progress.Root max={30}>
+        <Progress.Root max={30} value={timeLeft}>
           <Progress.Track>
             <Progress.Range />
           </Progress.Track>
@@ -47,7 +51,7 @@ export default function QuestionView() {
 }
 
 function QuestionSection() {
-  const question = useQuestionStore((state) => state.question);
+  const question = useCdvqQuestionStore((state) => state.question);
 
   return (
     <Container as="section">
@@ -59,7 +63,7 @@ function QuestionSection() {
 }
 
 function AnswerSection() {
-  const questionType = useQuestionStore((state) => state.question.type);
+  const questionType = useCdvqQuestionStore((state) => state.question.type);
 
   return (
     <Container as="section">
@@ -73,21 +77,21 @@ function AnswerSection() {
 }
 
 async function handleAnswer(answer: string, timeLeft: number) {
-  const chosenAnswer = useQuestionStore.getState().chosenAnswer;
-  const setChosenAnswer = useQuestionStore.getState().setChosenAnswer;
+  const chosenAnswer = useCdvqQuestionStore.getState().chosenAnswer;
+  const setChosenAnswer = useCdvqQuestionStore.getState().setChosenAnswer;
   setChosenAnswer(answer);
   if (chosenAnswer || timeLeft > 0) return;
 
   await new Promise((res) => setTimeout(res, 3000));
-  const nextView = useGameView.getState().nextView;
+  const nextView = useCdvqView.getState().nextView;
   nextView();
 }
 
 function MultipleChoicesAnswer() {
-  const question = useQuestionStore((state) => state.question);
-  const answers = useQuestionStore((state) => state.question.answers);
-  const chosenAnswer = useQuestionStore((state) => state.chosenAnswer);
-  const timeLeft = useGameView((state) => state.timeLeft);
+  const question = useCdvqQuestionStore((state) => state.question);
+  const answers = useCdvqQuestionStore((state) => state.question.answers);
+  const chosenAnswer = useCdvqQuestionStore((state) => state.chosenAnswer);
+  const { timeLeft } = useCdvqTimer((state) => state);
   const themes = ["blue", "pink", "purple", "cyan"];
 
   function checkAnswer(chosen: string, index: number) {
@@ -128,13 +132,14 @@ function MultipleChoicesAnswer() {
 function InputAnswer() {
   const [input, setInput] = useState("");
   const [isCorrect, setCorrect] = useState(false);
-  const question = useQuestionStore((state) => state.question);
-  const chosenAnswer = useQuestionStore((state) => state.chosenAnswer);
-  const timeLeft = useGameView((state) => state.timeLeft);
+  const question = useCdvqQuestionStore((state) => state.question);
+  const chosenAnswer = useCdvqQuestionStore((state) => state.chosenAnswer);
+  const { timeLeft } = useCdvqTimer((state) => state);
 
   function checkAnswer() {
     if (question.correctAnswer == input) setCorrect(true);
   }
+
   return (
     <HStack>
       {timeLeft <= 0 || chosenAnswer == null ? (

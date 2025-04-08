@@ -1,6 +1,6 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import prettierRecommended from "eslint-plugin-prettier/recommended";
+import prettierRecommended from "eslint-plugin-prettier/recommended"
 import love from "eslint-config-love";
 import { FlatCompat } from "@eslint/eslintrc";
 
@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ["src/components/ui/*"],
+    ignores: ["src/components/ui/*"]
   },
 
   ...compat.extends("next/core-web-vitals", "next/typescript"),

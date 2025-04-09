@@ -4,8 +4,15 @@ import { Flex, Grid, Box, Button, Text } from "@chakra-ui/react";
 import CountDown from "./countDown";
 
 export default function Pick() {
-  const { cities, selectedCity, setSelectedCity, setCities, setScene, scene, currentTeam } =
-    useROKStore();
+  const {
+    cities,
+    selectedCity,
+    setSelectedCity,
+    setCities,
+    setScene,
+    scene,
+    currentTeam,
+  } = useROKStore();
   const [isLocked, setIsLocked] = useState(false);
 
   const handleCityClick = (row: number, col: number) => {
@@ -28,29 +35,26 @@ export default function Pick() {
 
   const handleAutoLockCity = () => {
     let cityToLock = selectedCity;
-  
+
     // If no city is selected, choose the next available one
     if (!selectedCity) {
       cityToLock = selectNextAvailableCity();
     }
-  
+
     if (cityToLock) {
       const updatedCities = [...cities];
       updatedCities[cityToLock.row][cityToLock.col].ownedBy = currentTeam;
       setCities(updatedCities);
       setIsLocked(true);
-      setTimeout(() => {
-        setScene("attacker");
-      }, 2000);
     }
-  };  
+  };
 
   const handleUnlockCity = () => {
     if (selectedCity) {
       const updatedCities = [...cities];
       updatedCities[selectedCity.row][selectedCity.col].ownedBy = null;
       setCities(updatedCities);
-      setSelectedCity(null);
+      setSelectedCity(selectedCity);
       setIsLocked(false);
     } else {
       for (let i = 0; i < cities.length; i++) {
@@ -76,7 +80,12 @@ export default function Pick() {
 
       <CountDown
         seconds={30}
-        callback={handleAutoLockCity}
+        callback={() => {
+          handleAutoLockCity();
+          setTimeout(() => {
+            setScene("attacker");
+          }, 2000);
+        }}
         color="black"
         textSize={24}
       />
@@ -97,9 +106,9 @@ export default function Pick() {
                 bg={
                   city.ownedBy === currentTeam
                   ? "green.200"
-                  : city.ownedBy
-                  ? "gray.500"
-                  : "gray.200"
+                  : city.ownedBy && city.ownedBy !== currentTeam
+                  ? "red.200"
+                  : "gray.100"
                 }
                 p={{ base: 2, md: 4 }}
                 textAlign="center"
@@ -115,10 +124,7 @@ export default function Pick() {
                     : "none"
                 }
               >
-                <Text>{city.resources} resources</Text>
-                <Text>
-                  {city.ownedBy ? `Owned by: ${city.ownedBy}` : "Unclaimed"}
-                </Text>
+                <Text>{city.ownedBy ? `${city.ownedBy}` : "Unclaimed"}</Text>
               </Box>
             ))
           )}

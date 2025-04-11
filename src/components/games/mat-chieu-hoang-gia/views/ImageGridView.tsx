@@ -16,6 +16,9 @@ export default function ImageGridView() {
 function ImageTileBoard() {
   const { data } = useSWR("/mchg/rounds/current", fetchCurrentRound);
 
+  const imageUrl = `${process.env.NEXT_PUBLIC_API_HOST}/mchg/image?filename=${data?.image.name}`;
+  console.log(imageUrl);
+
   if (data === undefined) {
     return <Spinner size="xl" />;
   }
@@ -38,12 +41,7 @@ function ImageTileBoard() {
         bottom={0}
         zIndex={-10}
       >
-        <Image
-          src="https://picsum.photos/300/200"
-          alt="ansPic"
-          width="384"
-          height="256"
-        />
+        <Image src={imageUrl} alt="ansPic" width="384" height="256" />
       </Box>
     </SimpleGrid>
   );

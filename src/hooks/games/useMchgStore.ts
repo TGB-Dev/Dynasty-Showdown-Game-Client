@@ -13,7 +13,7 @@ export interface MCHGStates {
 export const useMchgStore = create<MCHGStates>((set) => ({
   timeLeft: 0,
   score: 0,
-  view: MchgView.SHOWING_SUB_QUESTION_ANSWER,
+  view: MchgView.CHOOSING_QUESTION,
 
   setView: (view: MchgView) => set({ view }),
   setTimeLeft: (timeLeft: number) => set({ timeLeft }),

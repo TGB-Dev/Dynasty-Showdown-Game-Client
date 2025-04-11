@@ -25,3 +25,15 @@ export async function fetchCurrentAnswer(): Promise<MchgCurrentAnswerDto> {
   const response = await requests.get("/mchg/round/current/currentAnswer");
   return await response.data;
 }
+
+export async function submitAnswer(answer: string) {
+  const response = await requests.post("/mchg/answer", {
+    answer,
+  });
+  return await response.data;
+}
+
+export async function requestMainQuestion() {
+  const response = await requests.post("/mchg/mainQuestion/request");
+  return await response.data;
+}

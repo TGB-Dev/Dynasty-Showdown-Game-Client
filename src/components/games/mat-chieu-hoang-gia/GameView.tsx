@@ -1,6 +1,14 @@
 "use client";
 
-import { Grid, GridItem, Heading, Progress, Show } from "@chakra-ui/react";
+import {
+  ButtonProps,
+  Grid,
+  GridItem,
+  Heading,
+  IconButton,
+  Progress,
+  Show,
+} from "@chakra-ui/react";
 import ImageGridView from "./views/ImageGridView";
 import { useMchgStore } from "@/hooks/games/useMchgStore";
 import { MchgView } from "@/types/mchg-view.enum";
@@ -11,6 +19,8 @@ import RoundResult from "./views/RoundResult";
 import type { Socket } from "socket.io-client";
 import { useEffect } from "react";
 import { socket } from "@/lib/socket";
+import { FaRegBell } from "react-icons/fa";
+import { requestMainQuestion } from "@/lib/games/mchg";
 
 const mchgSocketHandlers = {
   endGame: () => {},
@@ -52,16 +62,16 @@ function unregisterHandlers(
   }
 }
 
-function GameView() {
+export default function GameView() {
   const { score, view, timeLeft } = useMchgStore((state) => state);
 
-  // useEffect(() => {
-  //   registerHandlers(socket, mchgSocketHandlers);
-  //
-  //   return () => {
-  //     unregisterHandlers(socket, mchgSocketHandlers);
-  //   };
-  // }, []);
+  useEffect(() => {
+    registerHandlers(socket, mchgSocketHandlers);
+
+    return () => {
+      unregisterHandlers(socket, mchgSocketHandlers);
+    };
+  }, []);
 
   return (
     <Grid templateRows="auto auto 1fr" height="100vh" gap={2} userSelect="none">
@@ -100,8 +110,16 @@ function GameView() {
           <RoundResult />
         </Show>
       </GridItem>
+
+      <BellButton position="fixed" right="8" bottom="8" />
     </Grid>
   );
 }
 
-export default GameView;
+function BellButton({ ...props }: ButtonProps) {
+  return (
+    <IconButton {...props} onClick={requestMainQuestion}>
+      <FaRegBell />
+    </IconButton>
+  );
+}

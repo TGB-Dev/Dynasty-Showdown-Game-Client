@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import useSWR from "swr";
-import { fetchCurrentSubQuestion } from "@/lib/games/mchg";
+import { fetchCurrentSubQuestion, submitAnswer } from "@/lib/games/mchg";
 import { useForm } from "react-hook-form";
 
 export default function AnswerSubQuestionView() {
@@ -67,7 +67,7 @@ function AnswerInput({ length }: { length: number }) {
     formState: { errors },
   } = useForm<AnswerInputProps>();
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmit = handleSubmit((data) => submitAnswer(data.answer));
 
   const validate = (value: string) => {
     if (value.length < length) {

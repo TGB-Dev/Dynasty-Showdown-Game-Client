@@ -1,5 +1,10 @@
 import { requests } from "@/lib/requests";
-import { MchgCurrentQuestionDto, MchgCurrentRoundDto } from "@/types/mchg.dto";
+import {
+  MchgCurrentAnswerDto,
+  MchgCurrentQuestionDto,
+  MchgCurrentRequestUsernameDto,
+  MchgCurrentRoundDto,
+} from "@/types/mchg.dto";
 
 export async function fetchCurrentRound(): Promise<MchgCurrentRoundDto> {
   const response = await requests.get("/mchg/rounds/current");
@@ -7,11 +12,16 @@ export async function fetchCurrentRound(): Promise<MchgCurrentRoundDto> {
 }
 
 export async function fetchCurrentSubQuestion(): Promise<MchgCurrentQuestionDto> {
-  // const response = await requests.get("/mchg/rounds/current/currentQuestion");
-  // return await response.data;
+  const response = await requests.get("/mchg/round/current/currentQuestion");
+  return await response.data;
+}
 
-  return {
-    question: "Test question",
-    answerLength: 5,
-  };
+export async function fetchCurrentRequestUsername(): Promise<MchgCurrentRequestUsernameDto> {
+  const response = await requests.get("/mchg/mainQuestion/currentRequestUser");
+  return await response.data;
+}
+
+export async function fetchCurrentAnswer(): Promise<MchgCurrentAnswerDto> {
+  const response = await requests.get("/mchg/round/current/currentAnswer");
+  return await response.data;
 }

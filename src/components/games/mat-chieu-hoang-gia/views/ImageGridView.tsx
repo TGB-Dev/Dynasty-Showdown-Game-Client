@@ -1,4 +1,5 @@
 "use client";
+
 import { Box, Flex, For, Show, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import useSWR from "swr";

@@ -36,7 +36,7 @@ function SubQuestionSection() {
   }
 
   return (
-    <Grid templateRows="1fr auto" alignSelf="stretch" w="full" m="4" gap="8">
+    <Grid templateRows="1fr auto" alignSelf="stretch" w="full" m="4" gap="2">
       <GridItem>
         <Card.Root height="full">
           <Card.Body alignItems="center" justifyContent="center">
@@ -46,7 +46,11 @@ function SubQuestionSection() {
       </GridItem>
 
       <GridItem>
-        <AnswerInput length={data.answerLength} />
+        <Card.Root height="full">
+          <Card.Body>
+            <AnswerInput length={data.answerLength} />
+          </Card.Body>
+        </Card.Root>
       </GridItem>
     </Grid>
   );

@@ -1,24 +1,104 @@
 "use client";
-import { Grid, GridItem, Progress } from "@chakra-ui/react";
-import QuestionsView from "./views/QuestionsView";
-import { useMCHGStore } from "@/hooks/games/useMCHGStore";
-import BellView from "./views/BellView";
+
+import { Grid, GridItem, Heading, Progress, Show } from "@chakra-ui/react";
+import ImageGridView from "./views/ImageGridView";
+import { useMchgStore } from "@/hooks/games/useMchgStore";
+import { MchgView } from "@/types/mchg-view.enum";
+import AnswerMainQuestionView from "./views/AnswerMainQuestionView";
+import AnswerSubQuestionView from "./views/AnswerSubQuestionView";
+import SubQuestionAnswer from "./views/SubQuestionAnswer";
+import RoundResult from "./views/RoundResult";
+import type { Socket } from "socket.io-client";
+import { useEffect } from "react";
+import { socket } from "@/lib/socket";
+
+const mchgSocketHandlers = {
+  endGame: () => {},
+  message: () => {},
+  answerMainAnswer: () => {},
+
+  updateStage: (stage: MchgView) => {
+    const { setView } = useMchgStore.getState();
+    setView(stage);
+  },
+
+  updateRunGameTimer: () => {},
+
+  updateTimer: (timeLeft: number) => {
+    const { setTimeLeft } = useMchgStore.getState();
+    setTimeLeft(timeLeft);
+  },
+
+  updateRound: () => {},
+  updateSolvedQuestions: () => {},
+  pauseGame: () => {},
+  resumeGame: () => {},
+  broadcastQuestion: () => {},
+  broadcastAnswers: () => {},
+};
+
+function registerHandlers(socket: Socket, handlers: typeof mchgSocketHandlers) {
+  for (const [event, handler] of Object.entries(handlers)) {
+    socket.on(event, handler);
+  }
+}
+
+function unregisterHandlers(
+  socket: Socket,
+  handlers: typeof mchgSocketHandlers,
+) {
+  for (const event of Object.keys(handlers)) {
+    socket.off(event);
+  }
+}
 
 function GameView() {
-  const view = useMCHGStore((state) => state.view);
-  const score = useMCHGStore((state) => state.score);
+  const { score, view, timeLeft } = useMchgStore((state) => state);
+
+  useEffect(() => {
+    registerHandlers(socket, mchgSocketHandlers);
+
+    return () => {
+      unregisterHandlers(socket, mchgSocketHandlers);
+    };
+  }, []);
+
   return (
-    <Grid templateRows="auto auto 1fr" height="100vh" gap={2}>
+    <Grid templateRows="auto auto 1fr" height="100vh" gap={2} userSelect="none">
       <GridItem>
-        <Progress.Root max={30}>
+        <Progress.Root max={30} value={timeLeft}>
           <Progress.Track>
             <Progress.Range />
           </Progress.Track>
         </Progress.Root>
       </GridItem>
-      <GridItem marginLeft={4}>Điểm hiện tại: {score} điểm</GridItem>
-      <GridItem padding={4}>
-        {view == 1 ? <QuestionsView /> : <BellView />}
+
+      <GridItem>
+        <Heading textAlign="center" size="3xl" m={4}>
+          {score}
+        </Heading>
+      </GridItem>
+
+      <GridItem>
+        <Show when={view === MchgView.CHOOSING_QUESTION}>
+          <ImageGridView />
+        </Show>
+
+        <Show when={view === MchgView.ANSWERING_SUB_QUESTION}>
+          <AnswerSubQuestionView />
+        </Show>
+
+        <Show when={view === MchgView.ANSWERING_MAIN_QUESTION}>
+          <AnswerMainQuestionView />
+        </Show>
+
+        <Show when={view === MchgView.SHOWING_SUB_QUESTION_ANSWER}>
+          <SubQuestionAnswer />
+        </Show>
+
+        <Show when={view === MchgView.SHOWING_ROUND_RESULT}>
+          <RoundResult />
+        </Show>
       </GridItem>
     </Grid>
   );

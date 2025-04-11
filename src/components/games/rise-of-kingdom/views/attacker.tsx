@@ -1,9 +1,9 @@
-import { useROKStore } from "@/hooks/games/rok";
+import { useRokStore } from "@/hooks/games/useRokStore";
 import { Card, Flex, For, Text } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import DialogContent from "./Dialog";
-import AnswerCard from "./AnswerCard";
-import CountDown from "./countDown";
+import DialogContent from "../Dialog";
+import AnswerCard from "../AnswerCard";
+import CountDown from "../countDown";
 
 export default function Attacker() {
   const [open, setOpen] = useState<OpenState>({
@@ -15,10 +15,10 @@ export default function Attacker() {
   const {
     question,
     questionIndex: i,
-    setScene,
+    setStage,
     setQuestionIndex: setI,
     setSuccess,
-  } = useROKStore();
+  } = useRokStore();
 
   const handleClickAnswer = useCallback(
     (answer: string) => {
@@ -32,7 +32,7 @@ export default function Attacker() {
       setSuccess((prev: Success) => ({ ...prev, attack: isCorrect }));
       setI((prev: number) => (prev + 1 > question.length - 1 ? 0 : prev + 1));
     },
-    [question, i, setSuccess, setI]
+    [question, i, setSuccess, setI],
   );
 
   const handleOffDialog = useCallback(
@@ -40,12 +40,12 @@ export default function Attacker() {
       setOpen((prev: OpenState) => ({ ...prev, [dialog]: false }));
       callback && callback();
     },
-    []
+    [],
   );
 
   const handleNextScene = useCallback(() => {
-    setScene("defender");
-  }, [setScene]);
+    setStage("defender");
+  }, [setStage]);
 
   return (
     <>

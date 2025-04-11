@@ -1,7 +1,7 @@
-import { useROKStore } from "@/hooks/games/rok";
+import { useRokStore } from "@/hooks/games/useRokStore";
 import { Box, Button, CloseButton, Dialog, Flex, Text } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import CountDown from "./countDown";
+import CountDown from "../countDown";
 import { LuBookMarked } from "react-icons/lu";
 import { GoGraph } from "react-icons/go";
 
@@ -11,11 +11,11 @@ export default function Main() {
     status: false,
   });
 
-  const { setScene, turn, success, cities } = useROKStore();
+  const { setStage, turn, success, cities } = useRokStore();
 
   const handleNextScene = useCallback(() => {
-    setScene("pick");
-  }, [setScene]);
+    setStage("pick");
+  }, [setStage]);
 
   return (
     <Flex

@@ -1,9 +1,9 @@
-import { useROKStore } from "@/hooks/games/rok";
+import { useRokStore } from "@/hooks/games/useRokStore";
 import { Card, Flex, For, Text } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import CountDown from "./countDown";
-import DialogContent from "./Dialog";
-import AnswerCard from "./AnswerCard";
+import CountDown from "../countDown";
+import DialogContent from "../Dialog";
+import AnswerCard from "../AnswerCard";
 
 export default function Defender() {
   const [open, setOpen] = useState<OpenState>({
@@ -15,10 +15,10 @@ export default function Defender() {
   const {
     question,
     questionIndex: i,
-    setScene,
+    setStage,
     setQuestionIndex: setI,
     setSuccess,
-  } = useROKStore();
+  } = useRokStore();
 
   const handleClickAnswer = useCallback(
     (answer: string) => {
@@ -32,7 +32,7 @@ export default function Defender() {
       setSuccess((prev: Success) => ({ ...prev, defend: isCorrect }));
       setI((prev: number) => (prev + 1 > question.length - 1 ? 0 : prev + 1));
     },
-    [question, i, setSuccess, setI]
+    [question, i, setSuccess, setI],
   );
 
   const handleOffDialog = useCallback(
@@ -40,12 +40,12 @@ export default function Defender() {
       setOpen((prev: OpenState) => ({ ...prev, [dialog]: false }));
       callback && callback();
     },
-    []
+    [],
   );
 
   const handleNextScene = useCallback(() => {
-    setScene("main");
-  }, [setScene]);
+    setStage("main");
+  }, [setStage]);
 
   return (
     <>

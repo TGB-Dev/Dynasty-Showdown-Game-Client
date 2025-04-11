@@ -16,7 +16,7 @@ export async function startGame(game: Game) {
   } else if (game == Game.MatChieuHoangGia) {
     gameLink = "mchg";
   } else if (game == Game.RiseOfKingdom) {
-    gameLink = "rok";
+    gameLink = "rise-of-kingdom";
   } else {
     gameLink = "tgo";
   }

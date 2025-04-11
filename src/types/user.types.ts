@@ -1,5 +1,6 @@
-export class User {
+export interface User {
   id: string;
-  name: string;
-  point: number;
+  username: string;
+  score: number;
+  teamName: string;
 }

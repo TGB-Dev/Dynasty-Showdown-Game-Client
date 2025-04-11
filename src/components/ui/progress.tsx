@@ -1,6 +1,6 @@
-import { Progress as ChakraProgress } from "@chakra-ui/react";
+import {Progress as ChakraProgress} from "@chakra-ui/react";
 import * as React from "react";
-import { InfoTip } from "./toggle-tip";
+import {InfoTip} from "./toggle-tip";
 
 interface ProgressProps extends ChakraProgress.RootProps {
   showValueText?: boolean;

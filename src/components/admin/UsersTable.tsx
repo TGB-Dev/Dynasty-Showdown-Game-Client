@@ -1,10 +1,9 @@
 import { For, Table } from "@chakra-ui/react";
 import useSWR from "swr";
-import { FETCH_USERS_API_PATH, modifyPoint } from "@/lib/admin";
+import { FETCH_USERS_API_PATH } from "@/lib/admin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UsersActionBar } from "@/components/admin/UsersActionBar";
 import { useUsersStore } from "@/hooks/admin/useUsersStore";
-import useSWRMutation from "swr/mutation";
 
 export default function UsersTable() {
   const { users, selectedUsersId, toggleUser, toggleAllUsers, fetch } =

@@ -44,18 +44,18 @@ export async function fetchUsers(): Promise<User[]> {
   return [
     {
       id: "1",
-      name: "abc",
-      point: 10,
+      username: "abc",
+      score: 10,
     },
     {
       id: "2",
-      name: "hkt",
-      point: 1,
+      username: "hkt",
+      score: 1,
     },
     {
       id: "3",
-      name: "dev",
-      point: 5,
+      username: "dev",
+      score: 5,
     },
   ];
 }

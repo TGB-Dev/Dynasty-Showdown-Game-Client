@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { requests } from "../requests";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 
 function saveAccessToken(accessToken: string) {
   Cookies.set("accessToken", accessToken);
@@ -16,11 +17,23 @@ export async function login(credential: {
         username: credential.username,
         password: credential.password,
       })
-      .then(function (res) {
+      .then((res) => {
         saveAccessToken(res.data.accessToken);
+      })
+      .then(() => {
+        useCurrentUser.getState().refresh();
       });
   } catch {
     return false;
   }
   return true;
+}
+
+export async function getMe() {
+  try {
+    const res = await requests.get("/user/me");
+    return res.data;
+  } catch {
+    return null;
+  }
 }

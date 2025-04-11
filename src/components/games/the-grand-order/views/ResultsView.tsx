@@ -4,7 +4,7 @@ import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
 import { FETCH_USERS_API_PATH } from "@/lib/admin";
 import { packInfo } from "@/types/packages";
 import { User } from "@/types/user.types";
-import { Button, Stack, Table, Box, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Stack, Table } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -88,8 +88,8 @@ function ResultsView() {
                     justifyContent="space-evenly"
                     gap={10}
                   >
-                    <Table.Cell textAlign="center">{user.name}</Table.Cell>
-                    <Table.Cell textAlign="center">{user.point}</Table.Cell>
+                    <Table.Cell textAlign="center">{user.username}</Table.Cell>
+                    <Table.Cell textAlign="center">{user.score}</Table.Cell>
                     <Table.Cell textAlign="center">
                       <Button
                         variant="subtle"

@@ -1,39 +1,29 @@
 import { create } from "zustand/index";
-import { Question, QuestionType } from "@/types/question.types";
+import { Question } from "@/types/question.types";
 
 export interface QuestionState {
-  question: Question;
+  isAnswered: boolean;
+  question: Question | null;
   setQuestion: (question: Question) => void;
-  chosenAnswer: string | null;
-  setChosenAnswer: (answer: string) => void;
+  setAnswered: (isAnswered: boolean) => void;
 }
 
 export const useCdvqQuestionStore = create<QuestionState>((set) => ({
-  question: {
-    content: "What is the capital of Vietnam?",
-    answers: [
-      "Hanoi",
-      "Ho Chi Minh City, Southern. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet",
-      "Da Nang",
-      "Hue",
-    ],
-    correctAnswer: "Hanoi",
-    type: QuestionType.MultipleChoices,
-  },
-
-  chosenAnswer: null,
+  isAnswered: false,
+  question: null,
 
   setQuestion(question: Question) {
     set((state) => ({
       ...state,
+      isAnswered: false,
       question,
     }));
   },
 
-  setChosenAnswer: (answer) => {
+  setAnswered: (isAnswered: boolean) => {
     set((state) => ({
       ...state,
-      chosenAnswer: answer,
+      isAnswered,
     }));
   },
 }));

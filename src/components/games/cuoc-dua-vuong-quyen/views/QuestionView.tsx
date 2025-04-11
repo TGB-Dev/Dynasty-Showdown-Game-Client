@@ -14,11 +14,11 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useCdvqView } from "@/hooks/games/cdvq/useCdvqView";
 import { QuestionType } from "@/types/question.types";
 import { useState } from "react";
 import { useCdvqQuestionStore } from "@/hooks/games/cdvq/useCdvqQuestionStore";
 import { useCdvqTimer } from "@/hooks/games/cdvq/useCdvqTimer";
+import { requests } from "@/lib/requests";
 
 export default function QuestionView() {
   const { timeLeft } = useCdvqTimer((state) => state);
@@ -56,14 +56,14 @@ function QuestionSection() {
   return (
     <Container as="section">
       <Text as="h1" fontSize="2xl" textAlign="center">
-        {question.content}
+        {question?.content}
       </Text>
     </Container>
   );
 }
 
 function AnswerSection() {
-  const questionType = useCdvqQuestionStore((state) => state.question.type);
+  const questionType = useCdvqQuestionStore((state) => state.question?.type);
 
   return (
     <Container as="section">
@@ -76,46 +76,36 @@ function AnswerSection() {
   );
 }
 
-async function handleAnswer(answer: string, timeLeft: number) {
-  const chosenAnswer = useCdvqQuestionStore.getState().chosenAnswer;
-  const setChosenAnswer = useCdvqQuestionStore.getState().setChosenAnswer;
-  setChosenAnswer(answer);
-  if (chosenAnswer || timeLeft > 0) return;
+async function submitAnswer(answer: string) {
+  const { setAnswered } = useCdvqQuestionStore.getState();
 
-  await new Promise((res) => setTimeout(res, 3000));
-  const nextView = useCdvqView.getState().nextView;
-  nextView();
+  await requests.post("/cdvq/game/answer", { answer });
+  setAnswered(true);
 }
 
 function MultipleChoicesAnswer() {
   const question = useCdvqQuestionStore((state) => state.question);
-  const answers = useCdvqQuestionStore((state) => state.question.answers);
-  const chosenAnswer = useCdvqQuestionStore((state) => state.chosenAnswer);
-  const { timeLeft } = useCdvqTimer((state) => state);
+  const isAnswered = useCdvqQuestionStore((state) => state.isAnswered);
+  const answers = useCdvqQuestionStore((state) => state.question?.answers);
   const themes = ["blue", "pink", "purple", "cyan"];
-
-  function checkAnswer(chosen: string, index: number) {
-    if (chosenAnswer == null) return themes[index];
-    if (question.correctAnswer == chosen) return "green";
-    return "red";
-  }
 
   return (
     <Flex height="100%" justifyContent="center" alignItems="center">
-      {timeLeft <= 0 || chosenAnswer == null ? (
+      {question !== null ? (
         <SimpleGrid columns={{ base: 2, lg: 4 }} gap="2">
           <For each={answers}>
             {(answer, index) => (
               <Button
                 key={answer}
-                colorPalette={checkAnswer(answer, index)}
+                colorPalette={themes[index]}
                 fontSize="xl"
                 size="2xl"
                 minH="20vh"
                 h="auto"
                 p="4"
                 whiteSpace="normal"
-                onClick={() => handleAnswer(answer, timeLeft)}
+                disabled={isAnswered}
+                onClick={() => submitAnswer(answer)}
               >
                 {answer}
               </Button>
@@ -123,7 +113,7 @@ function MultipleChoicesAnswer() {
           </For>
         </SimpleGrid>
       ) : (
-        timeLeft > 0 && chosenAnswer && <Spinner size="xl" />
+        <Spinner size="xl" />
       )}
     </Flex>
   );
@@ -131,32 +121,17 @@ function MultipleChoicesAnswer() {
 
 function InputAnswer() {
   const [input, setInput] = useState("");
-  const [isCorrect, setCorrect] = useState(false);
-  const question = useCdvqQuestionStore((state) => state.question);
-  const chosenAnswer = useCdvqQuestionStore((state) => state.chosenAnswer);
-  const { timeLeft } = useCdvqTimer((state) => state);
-
-  function checkAnswer() {
-    if (question.correctAnswer == input) setCorrect(true);
-  }
+  const isAnswered = useCdvqQuestionStore((state) => state.isAnswered);
 
   return (
     <HStack>
-      {timeLeft <= 0 || chosenAnswer == null ? (
-        <Input
-          type="number"
-          css={isCorrect ? { "--error-color": "green" } : {}}
-          onChange={(e) => setInput(e.target.value)}
-        />
-      ) : (
-        timeLeft > 0 && chosenAnswer && <Input type="number" disabled />
-      )}
-      <Button
-        onClick={() => {
-          handleAnswer(input, timeLeft);
-          checkAnswer();
-        }}
-      >
+      <Input
+        type="number"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+
+      <Button onClick={() => submitAnswer(input)} disabled={isAnswered}>
         Nộp
         <LuSendHorizontal />
       </Button>

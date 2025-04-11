@@ -55,13 +55,13 @@ function unregisterHandlers(
 function GameView() {
   const { score, view, timeLeft } = useMchgStore((state) => state);
 
-  useEffect(() => {
-    registerHandlers(socket, mchgSocketHandlers);
-
-    return () => {
-      unregisterHandlers(socket, mchgSocketHandlers);
-    };
-  }, []);
+  // useEffect(() => {
+  //   registerHandlers(socket, mchgSocketHandlers);
+  //
+  //   return () => {
+  //     unregisterHandlers(socket, mchgSocketHandlers);
+  //   };
+  // }, []);
 
   return (
     <Grid templateRows="auto auto 1fr" height="100vh" gap={2} userSelect="none">

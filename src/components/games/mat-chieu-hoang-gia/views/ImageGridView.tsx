@@ -23,7 +23,7 @@ function ImageTileBoard() {
     <SimpleGrid width="full" columns={3} position="relative" maxW="sm" p={0}>
       <For each={data.questions}>
         {(question, index) => (
-          <ImageTile key={index} value={index + 1} show={question.solved} />
+          <ImageTile key={index} value={index + 1} show={!question.solved} />
         )}
       </For>
 
@@ -40,8 +40,8 @@ function ImageTileBoard() {
         <Image
           src="https://picsum.photos/300/200"
           alt="ansPic"
-          width="640"
-          height="427"
+          width="384"
+          height="256"
         />
       </Box>
     </SimpleGrid>

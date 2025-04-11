@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, For, Show, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { Box, Flex, For, Grid, Spinner } from "@chakra-ui/react";
 import useSWR from "swr";
 import { fetchResults } from "@/lib/games/cdvq";
 
@@ -11,45 +11,57 @@ function ResultsTileBoard() {
   }
 
   return (
-    <SimpleGrid width="full" columns={3} position="relative" maxW="sm" p={0}>
-      <For each={data}>
-        {(result, index) => (
-          <ResultsTile key={index} value={index + 1} show={true} />
+    <Grid
+      templateColumns="repeat(3, minmax(100px, 1fr))"
+      maxW="sm"
+      maxH="md"
+      overflowY="auto"
+      width="100%"
+      mx="auto"
+    >
+      <For each={data.results}>
+        {(result) => (
+          <For each={["username", "answerTime", "score"]}>
+            {(attr, index) => <ResultsTile key={index} value={result[attr]} />}
+          </For>
         )}
       </For>
-    </SimpleGrid>
+    </Grid>
   );
 }
 
-function ResultsTile({
-  show = false,
-  value,
-}: {
-  show?: boolean;
-  value: number;
-}) {
+function ResultsTile({ value }: { value: number | string }) {
   return (
-    <Box width="full" height="full" aspectRatio={1}>
-      <Show when={show}>
-        <Flex
-          fontWeight="bold"
-          width="full"
-          height="full"
-          bg="teal"
-          alignItems="center"
-          justifyContent="center"
-          color="white"
-        >
-          {value}
-        </Flex>
-      </Show>
+    <Box width="full" height="full">
+      <Box
+        maxWidth="full"
+        height="full"
+        color="white"
+        borderColor="white"
+        borderWidth="1px"
+        paddingX={4}
+        paddingY={2}
+        textAlign="center"
+        overflow="hidden"
+        textOverflow="ellipsis"
+        whiteSpace="nowrap"
+      >
+        {value}
+      </Box>
     </Box>
   );
 }
 
 export default function ResultsView() {
   return (
-    <Flex justify="center" alignItems="center" height="full">
+    <Flex
+      direction="column"
+      justify="center"
+      alignItems="center"
+      height="100vh"
+      gap={4}
+    >
+      <Box as="b">Kết quả</Box>
       <ResultsTileBoard />
     </Flex>
   );

@@ -7,18 +7,38 @@ import {
   For,
   Grid,
   GridItem,
-  HStack,
+  Group,
   Input,
   Progress,
   SimpleGrid,
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useGameView, useQuestionStore } from "@/hooks/games/useCDVQStore";
 import { QuestionType } from "@/types/question.types";
 import { useState } from "react";
+import { requests } from "@/lib/requests";
+import { useCdvqStore } from "@/hooks/games/cdvq/useCdvqStore";
+import useSWR from "swr";
+import { fetchQuestion } from "@/lib/games/cdvq";
+import { QuestionResponseDto } from "@/types/dtos/cdvq.dto";
 
 export default function QuestionView() {
+  const { timeLeft } = useCdvqStore((state) => state);
+  const { data } = useSWR("/cdvq/questions/current", fetchQuestion);
+
+  if (data === undefined) {
+    return (
+      <Flex
+        minH="100vh"
+        justifyContent="center"
+        alignItems="center"
+        userSelect="none"
+      >
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
+
   return (
     <Grid
       minW="100vw"
@@ -28,7 +48,7 @@ export default function QuestionView() {
       userSelect="none"
     >
       <GridItem>
-        <Progress.Root max={30}>
+        <Progress.Root max={30} value={timeLeft}>
           <Progress.Track>
             <Progress.Range />
           </Progress.Track>
@@ -36,35 +56,31 @@ export default function QuestionView() {
       </GridItem>
 
       <GridItem alignSelf="center" justifySelf="center">
-        <QuestionSection />
+        <QuestionSection question={data} />
       </GridItem>
 
       <GridItem>
-        <AnswerSection />
+        <AnswerSection question={data} />
       </GridItem>
     </Grid>
   );
 }
 
-function QuestionSection() {
-  const question = useQuestionStore((state) => state.question);
-
+function QuestionSection({ question }: { question: QuestionResponseDto }) {
   return (
     <Container as="section">
       <Text as="h1" fontSize="2xl" textAlign="center">
-        {question.content}
+        {question?.questionText}
       </Text>
     </Container>
   );
 }
 
-function AnswerSection() {
-  const questionType = useQuestionStore((state) => state.question.type);
-
+function AnswerSection({ question }: { question: QuestionResponseDto }) {
   return (
     <Container as="section">
-      {questionType === QuestionType.MultipleChoices ? (
-        <MultipleChoicesAnswer />
+      {question.type === QuestionType.MultipleChoices ? (
+        <MultipleChoicesAnswer question={question} />
       ) : (
         <InputAnswer />
       )}
@@ -72,89 +88,61 @@ function AnswerSection() {
   );
 }
 
-async function handleAnswer(answer: string, timeLeft: number) {
-  const chosenAnswer = useQuestionStore.getState().chosenAnswer;
-  const setChosenAnswer = useQuestionStore.getState().setChosenAnswer;
-  setChosenAnswer(answer);
-  if (chosenAnswer || timeLeft > 0) return;
+async function submitAnswer(answer: string) {
+  const { setAnswered } = useCdvqStore.getState();
 
-  await new Promise((res) => setTimeout(res, 3000));
-  const nextView = useGameView.getState().nextView;
-  nextView();
+  await requests.post("/cdvq/game/answer", { answer });
+  setAnswered(true);
 }
 
-function MultipleChoicesAnswer() {
-  const question = useQuestionStore((state) => state.question);
-  const answers = useQuestionStore((state) => state.question.answers);
-  const chosenAnswer = useQuestionStore((state) => state.chosenAnswer);
-  const timeLeft = useGameView((state) => state.timeLeft);
+function MultipleChoicesAnswer({
+  question,
+}: {
+  question: QuestionResponseDto;
+}) {
+  const isAnswered = useCdvqStore((state) => state.answered);
   const themes = ["blue", "pink", "purple", "cyan"];
 
-  function checkAnswer(chosen: string, index: number) {
-    if (chosenAnswer == null) return themes[index];
-    if (question.correctAnswer == chosen) return "green";
-    return "red";
-  }
-
   return (
-    <Flex height="100%" justifyContent="center" alignItems="center">
-      {timeLeft <= 0 || chosenAnswer == null ? (
-        <SimpleGrid columns={{ base: 2, lg: 4 }} gap="2">
-          <For each={answers}>
-            {(answer, index) => (
-              <Button
-                key={answer}
-                colorPalette={checkAnswer(answer, index)}
-                fontSize="xl"
-                size="2xl"
-                minH="20vh"
-                h="auto"
-                p="4"
-                whiteSpace="normal"
-                onClick={() => handleAnswer(answer, timeLeft)}
-              >
-                {answer}
-              </Button>
-            )}
-          </For>
-        </SimpleGrid>
-      ) : (
-        timeLeft > 0 && chosenAnswer && <Spinner size="xl" />
-      )}
-    </Flex>
+    <SimpleGrid columns={{ base: 2, lg: 4 }} gap="2">
+      <For each={question.options}>
+        {(answer, index) => (
+          <Button
+            key={answer}
+            colorPalette={themes[index]}
+            fontSize="xl"
+            size="2xl"
+            minH="20vh"
+            h="auto"
+            p="4"
+            whiteSpace="normal"
+            disabled={isAnswered}
+            onClick={() => submitAnswer(answer)}
+          >
+            {answer}
+          </Button>
+        )}
+      </For>
+    </SimpleGrid>
   );
 }
 
 function InputAnswer() {
   const [input, setInput] = useState("");
-  const [isCorrect, setCorrect] = useState(false);
-  const question = useQuestionStore((state) => state.question);
-  const chosenAnswer = useQuestionStore((state) => state.chosenAnswer);
-  const timeLeft = useGameView((state) => state.timeLeft);
+  const isAnswered = useCdvqStore((state) => state.answered);
 
-  function checkAnswer() {
-    if (question.correctAnswer == input) setCorrect(true);
-  }
   return (
-    <HStack>
-      {timeLeft <= 0 || chosenAnswer == null ? (
-        <Input
-          type="number"
-          css={isCorrect ? { "--error-color": "green" } : {}}
-          onChange={(e) => setInput(e.target.value)}
-        />
-      ) : (
-        timeLeft > 0 && chosenAnswer && <Input type="number" disabled />
-      )}
-      <Button
-        onClick={() => {
-          handleAnswer(input, timeLeft);
-          checkAnswer();
-        }}
-      >
+    <Group w="full">
+      <Input
+        type="number"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+
+      <Button onClick={() => submitAnswer(input)} disabled={isAnswered}>
         Nộp
         <LuSendHorizontal />
       </Button>
-    </HStack>
+    </Group>
   );
 }

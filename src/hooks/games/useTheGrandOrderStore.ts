@@ -31,32 +31,32 @@ export const useTheGrandOrderStore = create<TGOStates>((set) => ({
 
   setView: (view) => {
     set((state) => ({
-      view: (state.view = view),
+      view,
     }));
   },
   setPack: (pack) => {
     set((state) => ({
-      pack: (state.pack = pack),
+      pack,
     }));
   },
   setQuestions: (questions) => {
     set((state) => ({
-      questions: (state.questions = questions),
+      questions,
     }));
   },
   setAnswers: (answers) => {
     set((state) => ({
-      answers: (state.answers = answers),
+      answers,
     }));
   },
   setTimeLeft: (timeLeft) => {
     set((state) => ({
-      timeLeft: (state.timeLeft = timeLeft),
+      timeLeft,
     }));
   },
   setBaseTime: (baseTime) => {
     set((state) => ({
-      baseTime: (state.baseTime = baseTime),
+      baseTime,
     }));
   },
   addScore: (score) => {

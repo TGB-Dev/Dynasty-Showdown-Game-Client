@@ -1,7 +1,13 @@
 export interface TgoCurrentQuestionsPackResDto {
-  questions: {
-    id: string;
-    questionText: string;
-  }[];
-  answers: number[];
+  questionId: string;
+  questionText: string;
+}
+
+export interface TgoOpponentResDto {
+  opponents: string[];
+}
+
+export interface TgoCanAttackResDto {
+  attackScore: number;
+  changeOnScore: number;
 }

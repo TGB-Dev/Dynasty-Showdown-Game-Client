@@ -1,72 +1,36 @@
-import { Question } from "@/types/questions.types";
 import { create } from "zustand";
+import { TgoRoundStage } from "@/types/games/tgo.enum";
 
 export interface TGOStates {
-  view: number;
-  pack: number;
-  questions: Question[];
-  answers: number[];
-  baseTime: number;
-  timeLeft: number;
-  score: number;
+  stage: TgoRoundStage;
+  setStage: (stage: TgoRoundStage) => void;
 
-  setView: (view: number) => void;
-  setPack: (pack: number) => void;
-  setQuestions: (questions: Question[]) => void;
-  setAnswers: (answers: number[]) => void;
-  setBaseTime: (time: number) => void;
+  timeLeft: number;
   setTimeLeft: (time: number) => void;
-  addScore: (score: number) => void;
-  minusScore: (score: number) => void;
+
+  answered: boolean;
+  setAnswered: (answered: boolean) => void;
 }
 
 export const useTheGrandOrderStore = create<TGOStates>((set) => ({
-  view: 2,
-  pack: 3,
-  questions: [],
-  answers: [],
-  baseTime: 1,
-  timeLeft: 1,
-  score: 0,
+  stage: TgoRoundStage.WAITING,
+  setStage: (stage) => {
+    set(() => ({
+      stage,
+    }));
+  },
 
-  setView: (view) => {
-    set((state) => ({
-      view: (state.view = view),
+  timeLeft: 0,
+  setTimeLeft: (time) => {
+    set(() => ({
+      timeLeft: time,
     }));
   },
-  setPack: (pack) => {
-    set((state) => ({
-      pack: (state.pack = pack),
-    }));
-  },
-  setQuestions: (questions) => {
-    set((state) => ({
-      questions: (state.questions = questions),
-    }));
-  },
-  setAnswers: (answers) => {
-    set((state) => ({
-      answers: (state.answers = answers),
-    }));
-  },
-  setTimeLeft: (timeLeft) => {
-    set((state) => ({
-      timeLeft: (state.timeLeft = timeLeft),
-    }));
-  },
-  setBaseTime: (baseTime) => {
-    set((state) => ({
-      baseTime: (state.baseTime = baseTime),
-    }));
-  },
-  addScore: (score) => {
-    set((state) => ({
-      score: state.score + score,
-    }));
-  },
-  minusScore: (score) => {
-    set((state) => ({
-      score: state.score - score,
+
+  answered: false,
+  setAnswered: (answered) => {
+    set(() => ({
+      answered,
     }));
   },
 }));

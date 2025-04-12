@@ -2,106 +2,119 @@
 
 import useSWR from "swr";
 import { getCurrentQuestionPack, submitAnswers } from "@/lib/games/tgo";
-import {
-  Button,
-  Card,
-  Flex,
-  For,
-  Grid,
-  GridItem,
-  Show,
-  Spinner,
-} from "@chakra-ui/react";
+import { Button, Card, Flex, For, Show, Spinner } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
+import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
+import { TgoRoundStage } from "@/types/games/tgo.enum";
+import { Progress } from "@/components/ui/progress";
+
+const ANSWER_DURATION = 70; // seconds
 
 export default function QuestionsView() {
   const { data } = useSWR("/tgo/questions/current", getCurrentQuestionPack);
 
   if (!data) {
-    return <Spinner />;
+    return <Spinner size="xl" />;
   }
 
-  return (
-    <QuestionAndAnswerGrid answers={data.answers} questions={data.questions} />
-  );
+  return <QuestionAndAnswerGrid questions={data} />;
 }
 
 function QuestionAndAnswerGrid({
   questions,
-  answers,
 }: {
-  questions: { id: string; questionText: string }[];
-  answers: number[];
+  questions: { questionId: string; questionText: string }[];
 }) {
-  const [selectingAnswers, setSelectingAnswers] = useState<number[]>([]);
+  const { answered, timeLeft } = useTheGrandOrderStore();
 
-  const availableAnswers = useMemo(
-    () => answers.filter((answer) => selectingAnswers.indexOf(answer) === -1),
-    [answers, selectingAnswers],
+  const [selectedQuestion, setSelectedQuestion] = useState<
+    { questionId: string; questionText: string }[]
+  >([]);
+
+  const availableQuestions = useMemo(
+    () => questions.filter((question) => !selectedQuestion.includes(question)),
+    [questions, selectedQuestion],
   );
 
-  const selectAnswer = (answer: number) => {
-    setSelectingAnswers((prev) => [...prev, answer]);
+  const selectAnswer = (question: {
+    questionId: string;
+    questionText: string;
+  }) => {
+    setSelectedQuestion((prev) => [...prev, question]);
   };
 
-  const unselectAnswer = (answer: number) => {
-    setSelectingAnswers((prev) => prev.filter((a) => a !== answer));
+  const unselectAnswer = (question: {
+    questionId: string;
+    questionText: string;
+  }) => {
+    setSelectedQuestion((prev) => prev.filter((q) => q !== question));
+  };
+
+  const handleSubmit = async () => {
+    await submitAnswers(selectedQuestion);
+
+    const { setStage, setAnswered } = useTheGrandOrderStore.getState();
+    setAnswered(true);
+    setStage(TgoRoundStage.ANSWERING);
   };
 
   return (
-    <Flex direction="column" gap="4">
+    <Flex direction="column" gap="4" w="full" mx="auto" maxW="2xl">
+      <Progress
+        value={timeLeft}
+        max={ANSWER_DURATION}
+        position="fixed"
+        left={0}
+        right={0}
+        top={0}
+      />
+
       <Card.Root
-        flexDirection="row"
+        flexDirection="column"
         flexWrap="wrap"
         minH="16"
-        alignItems="center"
         p="2"
         gap="2"
-        maxW="full"
+        w="full"
       >
-        <For each={availableAnswers}>
-          {(answer) => (
-            <Button w="20" onClick={() => selectAnswer(answer)}>
-              {answer}
+        <For each={availableQuestions}>
+          {(question) => (
+            <Button
+              key={question.questionId}
+              h="auto"
+              whiteSpace="normal"
+              p={4}
+              onClick={() => selectAnswer(question)}
+              wordWrap="break-word"
+            >
+              {question.questionText}
             </Button>
           )}
         </For>
       </Card.Root>
 
-      <Grid templateColumns="3fr 1fr" alignItems="stretch" gap="2">
+      <Flex direction="column" alignItems="stretch" gap="2" w="full">
         <For each={questions}>
           {(question, index) => (
-            <>
-              <GridItem>
-                <Card.Root h="full" minH="24">
-                  <Card.Body justifyContent="center">
-                    {question.questionText}
-                  </Card.Body>
-                </Card.Root>
-              </GridItem>
-
-              <GridItem>
-                <Card.Root h="full">
-                  <Card.Body justifyContent="center" alignItems="center">
-                    <Show when={selectingAnswers[index] !== undefined}>
-                      <Button
-                        w="24"
-                        onClick={() => unselectAnswer(selectingAnswers[index])}
-                      >
-                        {selectingAnswers[index]}
-                      </Button>
-                    </Show>
-                  </Card.Body>
-                </Card.Root>
-              </GridItem>
-            </>
+            <Card.Root minH={10} key={question.questionId}>
+              <Show when={selectedQuestion[index] !== undefined}>
+                <Button
+                  onClick={() => unselectAnswer(selectedQuestion[index])}
+                  h="auto"
+                  whiteSpace="normal"
+                  p={4}
+                >
+                  {selectedQuestion[index]?.questionText}
+                </Button>
+              </Show>
+            </Card.Root>
           )}
         </For>
-      </Grid>
+      </Flex>
 
       <Button
-        disabled={selectingAnswers.length !== answers.length}
-        onClick={() => submitAnswers(questions, answers)}
+        disabled={selectedQuestion.length !== questions.length || answered}
+        onClick={handleSubmit}
       >
         Nộp
       </Button>

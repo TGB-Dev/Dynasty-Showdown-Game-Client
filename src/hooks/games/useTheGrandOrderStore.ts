@@ -21,7 +21,7 @@ export interface TGOStates {
 }
 
 export const useTheGrandOrderStore = create<TGOStates>((set) => ({
-  view: 1,
+  view: 2,
   pack: 3,
   questions: [],
   answers: [],

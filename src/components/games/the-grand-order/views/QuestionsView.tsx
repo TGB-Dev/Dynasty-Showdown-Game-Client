@@ -1,126 +1,110 @@
 "use client";
-import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
-import { Button, Flex, Grid, GridItem, Icon } from "@chakra-ui/react";
-import { FaLongArrowAltRight } from "react-icons/fa";
-import { useState } from "react";
 
-function QuestionsView() {
-  const pack = useTheGrandOrderStore((state) => state.pack);
-  const questions = useTheGrandOrderStore((state) => state.questions);
-  const setView = useTheGrandOrderStore((state) => state.setView);
-  const setAnswers = useTheGrandOrderStore((state) => state.setAnswers);
+import useSWR from "swr";
+import { getCurrentQuestionPack, submitAnswers } from "@/lib/games/tgo";
+import {
+  Button,
+  Card,
+  Flex,
+  For,
+  Grid,
+  GridItem,
+  Show,
+  Spinner,
+} from "@chakra-ui/react";
+import { useMemo, useState } from "react";
 
-  const [sidePos, setSidePos] = useState<number[]>(
-    Array(questions.length).fill(0),
-  );
-  const [ansPos, setAnsPos] = useState<number[]>([]);
-  const questionsList: string[] = questions.map((q) => q.question);
+export default function QuestionsView() {
+  const { data } = useSWR("/tgo/questions/current", getCurrentQuestionPack);
 
-  function handleClickLeft(i: number) {
-    setAnsPos([...ansPos, i]);
-    setSidePos(() => {
-      const temp = [...sidePos];
-      temp[i] = 1;
-      return temp;
-    });
-  }
-  function handleClickRight(i: number) {
-    setSidePos(() => {
-      const temp = [...sidePos];
-      temp[ansPos[i]] = 0;
-      return temp;
-    });
-    setAnsPos(() => {
-      const temp = [...ansPos];
-      temp.splice(i, 1);
-      return temp;
-    });
+  if (!data) {
+    return <Spinner />;
   }
 
-  function handleSubmit() {
-    setAnswers(ansPos.map((i) => questions[i].answer));
-    setView(3);
-  }
   return (
-    <Flex direction="column" justifyContent="center">
-      <Flex direction={{ base: "column", md: "row" }} gap={12}>
-        <Grid
-          w="30ch"
-          h={300}
-          templateRows={`repeat(${pack}, 1fr)`}
-          gap={2}
-          borderStyle="dashed"
-          padding={2}
-          borderWidth={1}
-          borderRadius="md"
-          borderColor="gray"
-          overflowY="auto"
-        >
-          {sidePos.map(
-            (side, i) =>
-              side == 0 && (
-                <GridItem key={i}>
-                  <Button
-                    w="full"
-                    h="full"
-                    padding={2}
-                    textWrap="wrap"
-                    variant="subtle"
-                    onClick={() => handleClickLeft(i)}
-                  >
-                    {questionsList[i]}
-                  </Button>
-                </GridItem>
-              ),
-          )}
-        </Grid>
-        <Icon
-          rotate={{ base: "90deg", md: "0deg" }}
-          size="lg"
-          alignSelf="center"
-        >
-          <FaLongArrowAltRight />
-        </Icon>
-
-        <Grid
-          templateRows={`repeat(${pack}, 1fr)`}
-          gap={2}
-          w="30ch"
-          h={300}
-          borderStyle="dashed"
-          borderRadius="md"
-          padding={2}
-          borderWidth={1}
-          borderColor="gray"
-          overflowY="auto"
-        >
-          {ansPos.map((chosen, i) => (
-            <GridItem key={questionsList[i]}>
-              <Button
-                w="full"
-                h="full"
-                padding={2}
-                textWrap="wrap"
-                variant="subtle"
-                onClick={() => handleClickRight(i)}
-              >
-                {questionsList[chosen]}
-              </Button>
-            </GridItem>
-          ))}
-        </Grid>
-      </Flex>
-      <br></br>
-      <Flex justifyContent="end">
-        <Button
-          disabled={ansPos.length < questionsList.length}
-          onClick={handleSubmit}
-        >
-          Gửi kết quả
-        </Button>
-      </Flex>
-    </Flex>
+    <QuestionAndAnswerGrid answers={data.answers} questions={data.questions} />
   );
 }
 
-export default QuestionsView;
+function QuestionAndAnswerGrid({
+  questions,
+  answers,
+}: {
+  questions: { id: string; questionText: string }[];
+  answers: number[];
+}) {
+  const [selectingAnswers, setSelectingAnswers] = useState<number[]>([]);
+
+  const availableAnswers = useMemo(
+    () => answers.filter((answer) => selectingAnswers.indexOf(answer) === -1),
+    [answers, selectingAnswers],
+  );
+
+  const selectAnswer = (answer: number) => {
+    setSelectingAnswers((prev) => [...prev, answer]);
+  };
+
+  const unselectAnswer = (answer: number) => {
+    setSelectingAnswers((prev) => prev.filter((a) => a !== answer));
+  };
+
+  return (
+    <Flex direction="column" gap="4">
+      <Card.Root
+        flexDirection="row"
+        flexWrap="wrap"
+        minH="16"
+        alignItems="center"
+        p="2"
+        gap="2"
+        maxW="full"
+      >
+        <For each={availableAnswers}>
+          {(answer) => (
+            <Button w="20" onClick={() => selectAnswer(answer)}>
+              {answer}
+            </Button>
+          )}
+        </For>
+      </Card.Root>
+
+      <Grid templateColumns="3fr 1fr" alignItems="stretch" gap="2">
+        <For each={questions}>
+          {(question, index) => (
+            <>
+              <GridItem>
+                <Card.Root h="full" minH="24">
+                  <Card.Body justifyContent="center">
+                    {question.questionText}
+                  </Card.Body>
+                </Card.Root>
+              </GridItem>
+
+              <GridItem>
+                <Card.Root h="full">
+                  <Card.Body justifyContent="center" alignItems="center">
+                    <Show when={selectingAnswers[index] !== undefined}>
+                      <Button
+                        w="24"
+                        onClick={() => unselectAnswer(selectingAnswers[index])}
+                      >
+                        {selectingAnswers[index]}
+                      </Button>
+                    </Show>
+                  </Card.Body>
+                </Card.Root>
+              </GridItem>
+            </>
+          )}
+        </For>
+      </Grid>
+
+      <Button
+        disabled={selectingAnswers.length !== answers.length}
+        onClick={() => submitAnswers(questions, answers)}
+      >
+        Nộp
+      </Button>
+    </Flex>
+  );
+}

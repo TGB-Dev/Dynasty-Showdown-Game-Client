@@ -1,62 +1,69 @@
 "use client";
-import { useTheGrandOrderStore } from "@/hooks/games/useTheGrandOrderStore";
-import { fetchTGOQuestions } from "@/lib/games";
+
 import { packInfo } from "@/types/packages";
-import { Button, Flex, Table } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { Button, Flex, SimpleGrid, Table } from "@chakra-ui/react";
+import { generateQuestion } from "@/lib/games/tgo";
+import { TgoQuestionPack } from "@/types/games/tgo.enum";
 
 function PackageView() {
-  const { score, setView, setQuestions, setPack, setTimeLeft, setBaseTime } =
-    useTheGrandOrderStore((state) => state);
-
-  useEffect(() => {
-    setPack(3);
-    setTimeLeft(70);
-    setBaseTime(70);
-  }, []);
-
-  async function handleClick(pack: number) {
-    const questions = await fetchTGOQuestions(pack);
-    setPack(pack);
-    setQuestions(questions);
-    setView(2);
-  }
   return (
     <Flex
       direction="column"
       justifyContent="center"
       alignItems="center"
-      gap={16}
+      maxW="md"
+      gap={4}
     >
-      <div>Điểm hiện tại: {score}</div>
       <Table.Root
         tableLayout="fixed"
         variant="outline"
-        size="md"
-        maxW="md"
         showColumnBorder
+        w="full"
       >
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader textAlign="center">
+              Số câu hỏi
+            </Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center">
+              Điểm thưởng
+            </Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center">
+              Điểm phạt
+            </Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+
         <Table.Body>
           {[3, 5, 7].map((pack) => (
             <Table.Row key={pack}>
               <Table.Cell textAlign="center" fontWeight="bold">
-                0{packInfo.get(pack)!.noOfQuestions} câu hỏi
+                {packInfo.get(pack)!.noOfQuestions}
               </Table.Cell>
               <Table.Cell textAlign="center">
-                {packInfo.get(pack)!.prize} điểm thưởng
+                {packInfo.get(pack)!.prize}
               </Table.Cell>
               <Table.Cell textAlign="center">
-                {packInfo.get(pack)!.penalty} điểm phạt
+                {packInfo.get(pack)!.penalty}
               </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-      <Flex wrap="wrap" justifyContent="center" alignItems="center" gap={16}>
-        <Button onClick={() => handleClick(3)}>Chọn gói 03 câu hỏi</Button>
-        <Button onClick={() => handleClick(5)}>Chọn gói 05 câu hỏi</Button>
-        <Button onClick={() => handleClick(7)}>Chọn gói 07 câu hỏi</Button>
-      </Flex>
+
+      <SimpleGrid columns={3} gap={4} w="full">
+        <Button onClick={() => generateQuestion(TgoQuestionPack.PACK_3)}>
+          Chọn gói 3
+        </Button>
+
+        <Button onClick={() => generateQuestion(TgoQuestionPack.PACK_5)}>
+          Chọn gói 5
+        </Button>
+
+        <Button onClick={() => generateQuestion(TgoQuestionPack.PACK_7)}>
+          Chọn gói 7
+        </Button>
+      </SimpleGrid>
     </Flex>
   );
 }

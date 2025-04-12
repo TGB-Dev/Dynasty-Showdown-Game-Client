@@ -10,3 +10,9 @@ export interface AnswerResponseDto {
   answer: string;
   correct: boolean;
 }
+
+export interface ResultResDto {
+  username: string;
+  score: number;
+  createdAt: Date;
+}

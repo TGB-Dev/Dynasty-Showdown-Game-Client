@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, For, Grid, Spinner } from "@chakra-ui/react";
+import { Box, Flex, For, Heading, Spinner, Table } from "@chakra-ui/react";
 import useSWR from "swr";
 import { fetchResults } from "@/lib/games/cdvq";
 
@@ -11,58 +11,44 @@ function ResultsTileBoard() {
   }
 
   return (
-    <Grid
-      templateColumns="repeat(3, minmax(100px, 1fr))"
-      maxW="sm"
-      maxH="md"
-      overflowY="auto"
-      width="100%"
-      mx="auto"
-    >
-      <For each={data.results}>
-        {(result) => (
-          <For each={["username", "answerTime", "score"]}>
-            {(attr, index) => <ResultsTile key={index} value={result[attr]} />}
-          </For>
-        )}
-      </For>
-    </Grid>
-  );
-}
+    <Table.Root maxW="lg">
+      <Table.Header>
+        <Table.Row>
+          <Table.Cell>Hạng</Table.Cell>
+          <Table.Cell fontWeight="bold">Người chơi</Table.Cell>
+          <Table.Cell>Thời gian nộp</Table.Cell>
+          <Table.Cell>Điểm thưởng</Table.Cell>
+        </Table.Row>
+      </Table.Header>
 
-function ResultsTile({ value }: { value: number | string }) {
-  return (
-    <Box width="full" height="full">
-      <Box
-        maxWidth="full"
-        height="full"
-        color="white"
-        borderColor="white"
-        borderWidth="1px"
-        paddingX={4}
-        paddingY={2}
-        textAlign="center"
-        overflow="hidden"
-        textOverflow="ellipsis"
-        whiteSpace="nowrap"
-      >
-        {value}
-      </Box>
-    </Box>
+      <Table.Body>
+        <For each={data}>
+          {(record, index) => (
+            <Table.Row key={record.username}>
+              <Table.Cell textAlign="center">{index + 1}</Table.Cell>
+              <Table.Cell fontWeight="bold">{record.username}</Table.Cell>
+              <Table.Cell>
+                {new Date(record.createdAt).toLocaleTimeString()}
+              </Table.Cell>
+              <Table.Cell textAlign="center">{record.score}</Table.Cell>
+            </Table.Row>
+          )}
+        </For>
+      </Table.Body>
+    </Table.Root>
   );
 }
 
 export default function ResultsView() {
   return (
-    <Flex
-      direction="column"
-      justify="center"
-      alignItems="center"
-      height="100vh"
-      gap={4}
-    >
-      <Box as="b">Kết quả</Box>
-      <ResultsTileBoard />
+    <Flex minH="100vh" px={4} py={8}>
+      <Box m="auto">
+        <Heading size="2xl" textAlign="center" mb={6}>
+          Kết quả
+        </Heading>
+
+        <ResultsTileBoard />
+      </Box>
     </Flex>
   );
 }

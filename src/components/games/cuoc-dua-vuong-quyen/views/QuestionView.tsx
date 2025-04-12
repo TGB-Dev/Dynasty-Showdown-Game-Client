@@ -7,7 +7,7 @@ import {
   For,
   Grid,
   GridItem,
-  HStack,
+  Group,
   Input,
   Progress,
   SimpleGrid,
@@ -16,12 +16,28 @@ import {
 } from "@chakra-ui/react";
 import { QuestionType } from "@/types/question.types";
 import { useState } from "react";
-import { useCdvqQuestionStore } from "@/hooks/games/cdvq/useCdvqQuestionStore";
-import { useCdvqTimer } from "@/hooks/games/cdvq/useCdvqTimer";
 import { requests } from "@/lib/requests";
+import { useCdvqStore } from "@/hooks/games/cdvq/useCdvqStore";
+import useSWR from "swr";
+import { fetchQuestion } from "@/lib/games/cdvq";
+import { QuestionResponseDto } from "@/types/dtos/cdvq.dto";
 
 export default function QuestionView() {
-  const { timeLeft } = useCdvqTimer((state) => state);
+  const { timeLeft } = useCdvqStore((state) => state);
+  const { data } = useSWR("/cdvq/questions/current", fetchQuestion);
+
+  if (data === undefined) {
+    return (
+      <Flex
+        minH="100vh"
+        justifyContent="center"
+        alignItems="center"
+        userSelect="none"
+      >
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
 
   return (
     <Grid
@@ -40,35 +56,31 @@ export default function QuestionView() {
       </GridItem>
 
       <GridItem alignSelf="center" justifySelf="center">
-        <QuestionSection />
+        <QuestionSection question={data} />
       </GridItem>
 
       <GridItem>
-        <AnswerSection />
+        <AnswerSection question={data} />
       </GridItem>
     </Grid>
   );
 }
 
-function QuestionSection() {
-  const question = useCdvqQuestionStore((state) => state.question);
-
+function QuestionSection({ question }: { question: QuestionResponseDto }) {
   return (
     <Container as="section">
       <Text as="h1" fontSize="2xl" textAlign="center">
-        {question?.content}
+        {question?.questionText}
       </Text>
     </Container>
   );
 }
 
-function AnswerSection() {
-  const questionType = useCdvqQuestionStore((state) => state.question?.type);
-
+function AnswerSection({ question }: { question: QuestionResponseDto }) {
   return (
     <Container as="section">
-      {questionType === QuestionType.MultipleChoices ? (
-        <MultipleChoicesAnswer />
+      {question.type === QuestionType.MultipleChoices ? (
+        <MultipleChoicesAnswer question={question} />
       ) : (
         <InputAnswer />
       )}
@@ -77,54 +89,50 @@ function AnswerSection() {
 }
 
 async function submitAnswer(answer: string) {
-  const { setAnswered } = useCdvqQuestionStore.getState();
+  const { setAnswered } = useCdvqStore.getState();
 
   await requests.post("/cdvq/game/answer", { answer });
   setAnswered(true);
 }
 
-function MultipleChoicesAnswer() {
-  const question = useCdvqQuestionStore((state) => state.question);
-  const isAnswered = useCdvqQuestionStore((state) => state.isAnswered);
-  const answers = useCdvqQuestionStore((state) => state.question?.answers);
+function MultipleChoicesAnswer({
+  question,
+}: {
+  question: QuestionResponseDto;
+}) {
+  const isAnswered = useCdvqStore((state) => state.answered);
   const themes = ["blue", "pink", "purple", "cyan"];
 
   return (
-    <Flex height="100%" justifyContent="center" alignItems="center">
-      {question !== null ? (
-        <SimpleGrid columns={{ base: 2, lg: 4 }} gap="2">
-          <For each={answers}>
-            {(answer, index) => (
-              <Button
-                key={answer}
-                colorPalette={themes[index]}
-                fontSize="xl"
-                size="2xl"
-                minH="20vh"
-                h="auto"
-                p="4"
-                whiteSpace="normal"
-                disabled={isAnswered}
-                onClick={() => submitAnswer(answer)}
-              >
-                {answer}
-              </Button>
-            )}
-          </For>
-        </SimpleGrid>
-      ) : (
-        <Spinner size="xl" />
-      )}
-    </Flex>
+    <SimpleGrid columns={{ base: 2, lg: 4 }} gap="2">
+      <For each={question.options}>
+        {(answer, index) => (
+          <Button
+            key={answer}
+            colorPalette={themes[index]}
+            fontSize="xl"
+            size="2xl"
+            minH="20vh"
+            h="auto"
+            p="4"
+            whiteSpace="normal"
+            disabled={isAnswered}
+            onClick={() => submitAnswer(answer)}
+          >
+            {answer}
+          </Button>
+        )}
+      </For>
+    </SimpleGrid>
   );
 }
 
 function InputAnswer() {
   const [input, setInput] = useState("");
-  const isAnswered = useCdvqQuestionStore((state) => state.isAnswered);
+  const isAnswered = useCdvqStore((state) => state.answered);
 
   return (
-    <HStack>
+    <Group w="full">
       <Input
         type="number"
         value={input}
@@ -135,6 +143,6 @@ function InputAnswer() {
         Nộp
         <LuSendHorizontal />
       </Button>
-    </HStack>
+    </Group>
   );
 }

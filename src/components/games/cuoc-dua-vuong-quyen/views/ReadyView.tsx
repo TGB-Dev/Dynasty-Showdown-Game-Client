@@ -1,12 +1,11 @@
-import { Flex, Heading } from "@chakra-ui/react";
-import { useCdvqReadyTimer } from "@/hooks/games/cdvq/useCdvqReadyTimer";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 
 export default function ReadyView() {
-  const time = useCdvqReadyTimer((state) => state.time);
-
   return (
-    <Flex align="center" justify="center" minH="100vh">
-      <Heading size="6xl">{time}</Heading>
+    <Flex direction="column" minH="100vh">
+      <Heading textAlign="center" my="auto">
+        Bạn đang ở trong phòng chờ của <b>Cuộc đua Vương quyền</b>
+      </Heading>
     </Flex>
   );
 }

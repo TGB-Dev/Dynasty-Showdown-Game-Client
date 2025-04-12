@@ -1,8 +1,22 @@
-import { useCdvqAnswer } from "@/hooks/games/cdvq/useCdvqAnswer";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Spinner } from "@chakra-ui/react";
+import useSWR from "swr";
+import { fetchAnswer } from "@/lib/games/cdvq";
 
 export default function AnswerView() {
-  const { answer, isCorrect } = useCdvqAnswer((state) => state);
+  const { data } = useSWR("/cdvq/game/answer", fetchAnswer);
+
+  if (!data) {
+    return (
+      <Flex
+        minH="100vh"
+        justifyContent="center"
+        alignItems="center"
+        userSelect="none"
+      >
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
 
   return (
     <Flex
@@ -12,9 +26,9 @@ export default function AnswerView() {
       align="center"
       gap="4"
     >
-      <Heading size="4xl">Đáp án: {answer}</Heading>
+      <Heading size="4xl">Đáp án: {data.answer}</Heading>
 
-      {isCorrect ? (
+      {data.correct ? (
         <Heading>Đúng!</Heading>
       ) : (
         <Heading>Bạn đã trả lời sai</Heading>

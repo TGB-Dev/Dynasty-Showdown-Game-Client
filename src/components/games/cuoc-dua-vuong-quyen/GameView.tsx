@@ -19,8 +19,6 @@ const CdvqSocketHandlers = {
   },
 
   gameEnded: () => {},
-  gamePaused: () => {},
-  gameResumed: () => {},
 
   question: async () => {
     const { setView, setAnswered } = useCdvqStore.getState();

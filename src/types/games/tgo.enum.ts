@@ -1,0 +1,12 @@
+export enum TgoQuestionPack {
+  PACK_3 = 3,
+  PACK_5 = 5,
+  PACK_7 = 7,
+}
+
+export enum TgoRoundStage {
+  WAITING = "WAITING",
+  CHOOSING_AND_ANSWERING = "CHOOSING_AND_ANSWERING",
+  ATTACKING_AND_SHOWING_RESULT = "ATTACKING_AND_SHOWING_RESULT",
+  ANSWERING = "ANSWERING",
+}

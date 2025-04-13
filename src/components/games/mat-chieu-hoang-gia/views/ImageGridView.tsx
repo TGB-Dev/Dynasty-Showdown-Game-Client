@@ -41,7 +41,7 @@ function ImageTileBoard() {
         bottom={0}
         zIndex={-10}
       >
-        <Image src={imageUrl} alt="ansPic" width="384" height="256" />
+        <img src={imageUrl} alt="ansPic" width="384" height="256" />
       </Box>
     </SimpleGrid>
   );

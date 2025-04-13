@@ -1,5 +1,8 @@
+"use client";
+
 import { Avatar } from "@/components/ui/avatar";
 import { Flex } from "@chakra-ui/react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,7 +15,9 @@ export default function Home() {
         justifyContent="center"
         textAlign="center"
       >
-        Bạn đang trong phòng chờ chung, vui lòng đợi chốc lát.
+        <Link href="/games" style={{ textDecoration: "underline" }}>
+          Quay lại trò chơi
+        </Link>
       </Flex>
     </Flex>
   );
